@@ -4,9 +4,7 @@ import './assets/main.css';
 import { app } from './app';
 
 document.addEventListener('DOMContentLoaded', () => {
-	setTimeout(() => {
-		document.querySelector('dx-license svg')?.closest('div')?.click();
-	}, 150);
+	document.querySelector('dx-license svg')?.closest('div')?.click();
 });
 
 app.mount('#app');
