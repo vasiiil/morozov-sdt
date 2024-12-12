@@ -1,0 +1,12 @@
+{
+	"items": [
+		{
+			"key": "$datagrid-border-radius",
+			"value": "8px"
+		}
+	],
+	"baseTheme": "fluent.saas.light.compact",
+	"assetsBasePath": "../../../node_modules/devextreme/dist/css",
+	"outputColorScheme": "base",
+	"base": true
+}
