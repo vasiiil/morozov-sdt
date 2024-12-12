@@ -5,7 +5,7 @@
 			"value": "8px"
 		}
 	],
-	"baseTheme": "fluent.saas.light.compact",
+	"baseTheme": "fluent.saas.light",
 	"assetsBasePath": "../../../node_modules/devextreme/dist/css",
 	"outputColorScheme": "base",
 	"base": true
