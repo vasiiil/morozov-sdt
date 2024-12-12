@@ -1,11 +1,12 @@
-import './assets/main.css'
+import './assets/themes/generated/theme.base.css';
+import './assets/themes/generated/theme.additional.css';
+import './assets/main.css';
+import { app } from './app';
 
-import { createApp } from 'vue'
-import App from './App.vue'
-import router from './router'
+document.addEventListener('DOMContentLoaded', () => {
+	setTimeout(() => {
+		document.querySelector('dx-license svg')?.closest('div')?.click();
+	}, 150);
+});
 
-const app = createApp(App)
-
-app.use(router)
-
-app.mount('#app')
+app.mount('#app');
