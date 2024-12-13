@@ -6,7 +6,7 @@
 					<i class="dx-icon dx-icon-menu"></i>
 				</dx-toolbar-item>
 				<dx-toolbar-item location="before">
-					<div class="title">DSS <span class="text-smaller">ООО СОЛФЕРИНО (WMS СДТ К2)</span></div>
+					<div class="title">SDT <span class="text-smaller">ООО СОЛФЕРИНО (WMS СДТ К2)</span></div>
 				</dx-toolbar-item>
 				<dx-toolbar-item location="after">
 					<i class="dx-icon dx-icon-help"></i>

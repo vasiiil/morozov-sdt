@@ -13,7 +13,7 @@ const _router = createRouter({
 			name: 'home',
 			component: () => import('@/pages/orders'),
 			meta: {
-				title: 'DSS Orders',
+				title: 'SDT Orders',
 			},
 		},
 	],
