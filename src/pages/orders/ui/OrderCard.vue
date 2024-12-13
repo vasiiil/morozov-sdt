@@ -46,15 +46,16 @@ import { DxPopup, DxToolbarItem } from 'devextreme-vue/popup';
 import { DxForm, DxLabel, DxSimpleItem } from 'devextreme-vue/form';
 
 import { formatCurrency } from '@/shared/lib/utils/formatters';
-import { toFormat } from '@/shared/lib/utils/date';
-import { useStore, type IOrderItem } from '../model';
-import { generateNumber } from '@/shared/lib/utils/generate';
+// import { toFormat } from '@/shared/lib/utils/date';
+// import { useStore, type IOrderItem } from '../model';
+// import { generateNumber } from '@/shared/lib/utils/generate';
+type IOrderItem = unknown;
 
-const emit = defineEmits<{
-	(event: 'saved'): void;
-}>();
+// const emit = defineEmits<{
+// 	(event: 'saved'): void;
+// }>();
 const popupRef = useTemplateRef<InstanceType<typeof DxPopup>>('popup');
-const { orders } = useStore();
+// const { orders } = useStore();
 function getDefaultForm(): IOrderItem {
 	return {
 		amount: 0,
@@ -87,14 +88,14 @@ const createButtonOptions = {
 	stylingMode: 'outlined',
 	onClick: () => {
 		// validation
-		orders.unshift({
-			...form.value,
-			orderDate: toFormat(form.value.orderDate),
-			deliveryDate: toFormat(form.value.deliveryDate),
-			customerNumber: form.value.customerNumber ?? -1,
-			id: generateNumber(),
-		});
-		emit('saved');
+		// orders.unshift({
+		// 	...form.value,
+		// 	orderDate: toFormat(form.value.orderDate),
+		// 	deliveryDate: toFormat(form.value.deliveryDate),
+		// 	customerNumber: form.value.customerNumber ?? -1,
+		// 	id: generateNumber(),
+		// });
+		// emit('saved');
 		popupRef.value.instance.hide();
 	},
 };
