@@ -19,16 +19,19 @@ export function useApi() {
 	const api = _useApi();
 	const { names: statusNames } = useOrderStatusStore();
 	async function getList(
-		filter: Record<string, unknown>,
+		filter: {
+			[P in keyof OrderTypes.IListItem]?: string | number;
+		},
 		offset: number,
 		limit: number,
+		sort: OrderTypes.TSort | null = null,
 	): Promise<TListReturn> {
 		try {
 			const response = await api.get<TListResponse>('/orders', {
 				filter,
 				offset,
 				limit,
-				sort: {
+				sort: sort ?? {
 					date_create: 'desc',
 				},
 			});

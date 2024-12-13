@@ -16,3 +16,17 @@ export interface IListItem extends IIdentified {
 	payment_type: number;
 	final_date: string | null;
 }
+
+export type TSortFields =
+	| 'order_id'
+	| 'id'
+	| 'date_create'
+	| 'delivery_code'
+	| 'summ'
+	| 'date_status'
+	| 'customer_name_full'
+	| 'status';
+
+export type TSort = {
+	[P in keyof Pick<IListItem, TSortFields>]?: 'asc' | 'desc'
+};
