@@ -11,11 +11,12 @@
 		:max-displayed-tags="3"
 		select-all-mode="allPages"
 		apply-value-mode="useButtons"
+		ref="tagBox"
 	/>
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { DxTagBox } from 'devextreme-vue/tag-box';
 
 import {
@@ -23,9 +24,12 @@ import {
 	type OrderStatusTypes,
 } from '@/entities/order-status';
 const store = useOrderStatusStore();
+const tagBox = ref<InstanceType<typeof DxTagBox>>();
 onMounted(() => {
 	if (items.value.length === 0) {
-		store.loadList();
+		store.loadList().then(() => {
+			tagBox.value.instance.repaint();
+		});
 	}
 });
 const items = computed(() => store.items);
