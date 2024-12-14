@@ -36,87 +36,105 @@
 					:formats="['xlsx']"
 				></dx-export>
 
-				<dx-data-grid-toolbar>
-					<dx-data-grid-toolbar-item
-						widget="dxButton"
-						location="before"
-						:options="refreshButtonOptions"
-					></dx-data-grid-toolbar-item>
-					<dx-data-grid-toolbar-item location="before">
-						<order-status-tag-box v-model="statusIds"></order-status-tag-box>
-					</dx-data-grid-toolbar-item>
-					<dx-data-grid-toolbar-item
-						name="exportButton"
-					></dx-data-grid-toolbar-item>
-					<dx-data-grid-toolbar-item
-						name="searchPanel"
-					></dx-data-grid-toolbar-item>
-				</dx-data-grid-toolbar>
-
 				<dx-column
 					data-field="order_id"
+					data-type="string"
 					caption="№ Заказа внутренний"
 					:width="150"
+					:allow-header-filtering="false"
+					:filter-operations="[]"
 				></dx-column>
-				<dx-column data-field="id" caption="№ Заказа" :width="150"></dx-column>
+				<dx-column
+					data-field="id"
+					data-type="string"
+					caption="№ Заказа"
+					:width="150"
+					:allow-header-filtering="false"
+					:filter-operations="[]"
+				></dx-column>
 				<dx-column
 					data-field="date_create"
 					data-type="datetime"
 					caption="Дата создания"
 					:width="150"
+					:allow-header-filtering="false"
+					:filter-operations="['=', 'between']"
 				></dx-column>
 				<dx-column
 					data-field="type"
+					data-type="number"
 					caption="Тип доставки"
 					:width="100"
 					:allow-sorting="false"
+					:allow-filtering="false"
 				></dx-column>
 				<dx-column
 					data-field="status"
+					data-type="number"
 					caption="Статус"
-					calculate-display-value="status_name"
 					:width="150"
+					:allow-filtering="false"
+					:allow-header-filtering="true"
+					:filter-values="[13, 14, 15]"
 				>
 					<dx-lookup
-						:data-source="statusLookupDatwaSource"
-						value-expr="id"
-						display-expr="name"
+						:data-source="statusLookupDataSource"
+						value-expr="value"
+						display-expr="text"
 					></dx-lookup>
+					<dx-header-filter
+						:data-source="statusLookupDataSource"
+					></dx-header-filter>
 				</dx-column>
 				<dx-column
 					data-field="date_status"
 					data-type="datetime"
 					caption="Дата обновления статуса"
 					:width="150"
+					:allow-header-filtering="false"
+					:filter-operations="['=', 'between']"
 				></dx-column>
 				<dx-column
 					data-field="customer_name_full"
+					data-type="string"
 					caption="ФИО получателя"
 					:width="150"
+					:allow-header-filtering="false"
+					:filter-operations="[]"
+					selected-filter-operation="contains"
 				></dx-column>
 				<dx-column
 					data-field="date_ship"
-					data-type="datetime"
+					data-type="date"
 					caption="Дата отгрузки (доставки)"
 					:width="150"
 					:allow-sorting="false"
+					:allow-header-filtering="false"
+					:filter-operations="[]"
 				></dx-column>
 				<dx-column
 					data-field="summ"
+					data-type="number"
 					caption="Сумма"
 					:width="200"
 					:format="formatCurrency"
+					:allow-header-filtering="false"
+					:filter-operations="['=', 'between']"
 				></dx-column>
 				<dx-column
 					data-field="payment_type"
+					data-type="number"
 					caption="Тип оплаты"
 					:width="100"
 					:allow-sorting="false"
+					:allow-filtering="false"
 				></dx-column>
 				<dx-column
 					data-field="delivery_code"
+					data-type="string"
 					caption="Код службы доставки"
 					:width="100"
+					:allow-filtering="false"
 				></dx-column>
 			</dx-data-grid>
 		</div>
@@ -137,31 +155,20 @@ import {
 	DxScrolling,
 	DxSearchPanel,
 	DxSorting,
-	DxToolbar as DxDataGridToolbar,
-	DxItem as DxDataGridToolbarItem,
 } from 'devextreme-vue/data-grid';
 import DataSource from 'devextreme/data/data_source';
-import ArrayStore from 'devextreme/data/array_store';
+import CustomStore from 'devextreme/data/custom_store';
 
 import { formatCurrency } from '@/shared/lib/utils/formatters';
+import { parseFilter } from '@/shared/lib/utils/dx-data-source';
+import { toFormat } from '@/shared/lib/utils/date';
 
-import {
-	useOrderStatusStore,
-	type OrderStatusTypes,
-} from '@/entities/order-status';
+import { useOrderStatusStore } from '@/entities/order-status';
 
-import { OrderStatusTagBox } from '@/widgets/order-status';
 import { useOrderApi, type OrderTypes } from '@/entities/order';
 
 const dataGridRef = ref<InstanceType<typeof DxDataGrid>>();
 const api = useOrderApi();
-
-function reloadGridDataSource() {
-	dataGridRef.value.instance.getDataSource().reload();
-}
-async function onRefreshButtonClick() {
-	reloadGridDataSource();
-}
 
 const dataSource = new DataSource<OrderTypes.IListItem, 'id'>({
 	key: 'id',
@@ -177,10 +184,55 @@ const dataSource = new DataSource<OrderTypes.IListItem, 'id'>({
 				sort[sortItem.selector] = sortItem.desc ? 'desc' : 'asc';
 			}
 		}
+		const dataGridFilter = parseFilter<OrderTypes.TDxDataGridFilters>(
+			loadOptions.filter,
+		);
+		const filter: OrderTypes.TFilter = {};
+		if (dataGridFilter) {
+			for (const _field in dataGridFilter) {
+				const field = _field as OrderTypes.TFilterFields;
+				if (
+					field === 'date_create' ||
+					field === 'date_status' ||
+					field === 'date_ship'
+				) {
+					const filterValue = dataGridFilter[field];
+					if (Array.isArray(filterValue)) {
+						const firstValue = toFormat(filterValue[0]);
+						const secondValue = toFormat(filterValue[1]);
+						if (firstValue && secondValue) {
+							filter[field] = `${firstValue} - ${secondValue}`;
+						} else if (firstValue) {
+							filter[field] = firstValue;
+						} else if (secondValue) {
+							filter[field] = secondValue;
+						} else {
+							delete filter[field];
+						}
+					} else {
+						const value = toFormat(
+							filterValue,
+							field === 'date_ship' ? 'DD.MM.YYYY' : 'DD.MM.YYYY hh:mm:ss',
+						);
+						if (value) {
+							filter[field] = value;
+						} else {
+							delete filter[field];
+						}
+					}
+				} else if (field === 'status') {
+					if (Array.isArray(dataGridFilter[field])) {
+						filter.status = dataGridFilter[field].join(',');
+					} else {
+						filter.status = dataGridFilter[field];
+					}
+				} else {
+					filter.status = dataGridFilter[field];
+				}
+			}
+		}
 		const result = await api.getList(
-			{
-				status: statusIds.value.join(','),
-			},
+			filter ?? {},
 			loadOptions.skip ?? 0,
 			loadOptions.take ?? 100,
 			sort,
@@ -191,19 +243,23 @@ const dataSource = new DataSource<OrderTypes.IListItem, 'id'>({
 	},
 });
 
-const refreshButtonOptions = {
-	text: 'Обновить',
-	icon: 'refresh',
-	stylingMode: 'outlined',
-	onClick: onRefreshButtonClick,
+const { items: statusItems, loadList: loadStatusItems } = useOrderStatusStore();
+const statusLookupDataSource = {
+	store: new CustomStore({
+		key: 'value',
+		loadMode: 'raw',
+		load: async () => {
+			if (statusItems.length === 0) {
+				await loadStatusItems();
+			}
+			return statusItems.map((item) => ({
+				text: item.name,
+				value: item.id,
+			}));
+		},
+	}),
+	sort: 'value',
 };
-
-const statusIds = ref<OrderStatusTypes.TId[]>([13, 14, 15]);
-const { items: statusItems } = useOrderStatusStore();
-const statusLookupDatwaSource = new ArrayStore({
-	data: statusItems,
-	key: 'id',
-});
 </script>
 
 <style lang="scss" scoped>
