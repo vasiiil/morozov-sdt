@@ -1,14 +1,10 @@
 import { useReactiveIdentifiedArray } from '@/shared/lib/use/base/useReactiveIdentifiedArray';
 import { useApi } from '../api';
-import type { IListItem } from './types'
+import type { IListItem } from './types';
 
-const { array: items, refresh } =
-	useReactiveIdentifiedArray<IListItem>();
+const { array: items, refresh } = useReactiveIdentifiedArray<IListItem>();
 let request: Promise<IListItem[]> | null = null;
-const names = new Map<
-	IListItem['id'],
-	IListItem['name']
->();
+const names = new Map<IListItem['id'], IListItem['name']>();
 export function useStore() {
 	const api = useApi();
 	function refreshItems(items: IListItem[]) {
@@ -19,15 +15,12 @@ export function useStore() {
 		}
 	}
 	async function loadList() {
-		if (request) {
-			const data = await request;
-			refreshItems(data);
-			request = null;
+		if (!request) {
+			request = api.getList();
 		}
 
-		request = api.getList();
-		const items = await request;
-		refreshItems(items);
+		const data = await request;
+		refreshItems(data);
 		request = null;
 	}
 
