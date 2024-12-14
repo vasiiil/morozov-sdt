@@ -5,7 +5,7 @@ export function isValidDate(value: unknown): value is Date {
 export function toFormat<
 	TVavlue extends Date | null | undefined,
 	R = TVavlue extends Date ? string : null,
->(value: TVavlue, format = 'YYYY-MM-DD'): R {
+>(value: TVavlue, format = 'DD.MM.YYYY hh:mm:ss'): R {
 	if (isValidDate(value)) {
 		return moment(value).format(format) as R;
 	}
