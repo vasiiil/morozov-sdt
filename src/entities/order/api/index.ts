@@ -19,9 +19,7 @@ export function useApi() {
 	const api = _useApi();
 	const { names: statusNames } = useOrderStatusStore();
 	async function getList(
-		filter: {
-			[P in keyof OrderTypes.IListItem]?: string | number;
-		},
+		filter: OrderTypes.TFilter,
 		offset: number,
 		limit: number,
 		sort: OrderTypes.TSort | null = null,

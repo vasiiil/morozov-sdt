@@ -30,3 +30,32 @@ export type TSortFields =
 export type TSort = {
 	[P in keyof Pick<IListItem, TSortFields>]?: 'asc' | 'desc'
 };
+
+export type TFilterFields =
+	| 'order_id'
+	| 'id'
+	| 'date_create'
+	| 'delivery_code'
+	| 'summ'
+	| 'date_status'
+	| 'date_ship'
+	| 'customer_name_full'
+	| 'type'
+	| 'status';
+
+export type TFilter = {
+	[P in keyof Pick<IListItem, TFilterFields>]?: string | number;
+};
+
+export type TDxDataGridFilters = {
+	order_id?: string;
+	id?: string;
+	date_create?: Date | [Date, Date];
+	delivery_code?: string;
+	summ: number;
+	date_status?: Date | [Date, Date];
+	date_ship?: Date | [Date, Date];
+	customer_name_full?: string;
+	type: number;
+	status: number | number[];
+};
