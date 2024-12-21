@@ -8,10 +8,11 @@
 				:allow-column-reordering="true"
 				:allow-column-resizing="true"
 				:show-borders="true"
+				:column-min-width="50"
+				:sync-lookup-filter-values="false"
+				:remote-operations="{ paging: true, sorting: true, filtering: true }"
 				width="100%"
 				height="100%"
-				:column-min-width="50"
-				:remote-operations="{ paging: true, sorting: true, filtering: true }"
 				ref="dataGridRef"
 			>
 				<dx-paging :page-size="50"></dx-paging>
@@ -23,7 +24,6 @@
 					:show-navigation-buttons="true"
 				></dx-pager>
 				<dx-scrolling mode="virtual"></dx-scrolling>
-				<dx-search-panel :visible="true" :width="350"></dx-search-panel>
 				<dx-sorting mode="multiple"></dx-sorting>
 				<dx-filter-row :visible="true" apply-filter="auto"></dx-filter-row>
 				<dx-header-filter
@@ -64,10 +64,17 @@
 					data-field="type"
 					data-type="number"
 					caption="Тип доставки"
-					:width="100"
+					:width="200"
 					:allow-sorting="false"
-					:allow-filtering="false"
-				></dx-column>
+					:allow-filtering="true"
+					:allow-header-filtering="false"
+				>
+					<dx-lookup
+						:data-source="typeLookupDataSource"
+						value-expr="value"
+						display-expr="text"
+					></dx-lookup>
+				</dx-column>
 				<dx-column
 					data-field="status"
 					data-type="number"
@@ -119,7 +126,7 @@
 					:width="200"
 					:format="formatCurrency"
 					:allow-header-filtering="false"
-					:filter-operations="['=', 'between']"
+					:filter-operations="[]"
 				></dx-column>
 				<dx-column
 					data-field="payment_type"
@@ -153,7 +160,6 @@ import {
 	DxPaging,
 	DxPager,
 	DxScrolling,
-	DxSearchPanel,
 	DxSorting,
 } from 'devextreme-vue/data-grid';
 import DataSource from 'devextreme/data/data_source';
@@ -220,14 +226,14 @@ const dataSource = new DataSource<OrderTypes.IListItem, 'id'>({
 							delete filter[field];
 						}
 					}
-				} else if (field === 'status') {
+				} else if (field === 'status' || field === 'type') {
 					if (Array.isArray(dataGridFilter[field])) {
-						filter.status = dataGridFilter[field].join(',');
+						filter[field] = dataGridFilter[field].join(',');
 					} else {
-						filter.status = dataGridFilter[field];
+						filter[field] = dataGridFilter[field];
 					}
 				} else {
-					filter.status = dataGridFilter[field];
+					filter[field] = dataGridFilter[field];
 				}
 			}
 		}
@@ -259,6 +265,31 @@ const statusLookupDataSource = {
 		},
 	}),
 	sort: 'value',
+};
+
+const typeLookupDataSource = {
+	store: new CustomStore({
+		key: 'value',
+		loadMode: 'raw',
+		load: () => {
+			return [
+				{ value: 23, text: 'БелПочта' },
+				{ value: 22, text: 'Почта РФ Курьер Онлайн' },
+				{ value: 21, text: 'Почта РФ Посылка Онлайн' },
+				{ value: 20, text: 'Легкий вес' },
+				{ value: 7, text: 'EMS' },
+				{ value: 6, text: 'Ценная бандероль' },
+				{ value: 5, text: 'Посылка 1 класса' },
+				{ value: 4, text: 'Курьерская служба' },
+				{ value: 3, text: 'Почтой РФ' },
+				{ value: 2, text: 'Самовывоз' },
+				{ value: 1, text: 'Курьерская служба' },
+				{ value: 0, text: 'B2B' },
+				{ value: -1, text: 'Не указан' },
+			];
+		},
+	}),
+	sort: { selector: 'value', desc: true },
 };
 </script>
 
