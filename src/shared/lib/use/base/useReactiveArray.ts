@@ -13,7 +13,7 @@ export interface IUseReactiveArray<T> {
 	update: (index: number, item: T) => void;
 }
 
-export function useReactiveArray<T>(init: T[]): IUseReactiveArray<T> {
+export function useReactiveArray<T>(init: T[] = []): IUseReactiveArray<T> {
 	const array = reactive<Readonly<T>[]>([]) as Readonly<T>[];
 	refresh(init);
 
