@@ -1,11 +1,11 @@
 import { useApi as _useApi } from '@/shared/api';
-import type { OrderStatusTypes } from '@/entities/order-status';
+import type { types } from '../model';
 
 export function useApi() {
 	const api = _useApi();
-	async function getList(): Promise<OrderStatusTypes.IListItem[]> {
+	async function getList(): Promise<types.IListItem[]> {
 		try {
-			const { data } = await api.get<{ data: OrderStatusTypes.IListItem[] }>(
+			const { data } = await api.get<{ data: types.IListItem[] }>(
 				'/lst_status',
 			);
 
