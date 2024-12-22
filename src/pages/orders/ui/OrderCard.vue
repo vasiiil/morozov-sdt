@@ -1,104 +1,86 @@
 <template>
-	<dx-popup ref="popup" title="Создание заказа" width="50vw" max-height="50vh">
-		<dx-toolbar-item
-			widget="dxButton"
-			toolbar="bottom"
-			location="after"
-			:options="createButtonOptions"
-		></dx-toolbar-item>
-		<dx-form v-model:form-data="form" :col-count="2">
-			<dx-simple-item data-field="executorNumber">
-				<dx-label text="Номер исполнителя"></dx-label>
-			</dx-simple-item>
-			<dx-simple-item data-field="customerNumber" editor-type="dxNumberBox">
-				<dx-label text="Номер покупателя"></dx-label>
-			</dx-simple-item>
-			<dx-simple-item data-field="orderDate" editor-type="dxDateBox">
-				<dx-label text="Дата заказа"></dx-label>
-			</dx-simple-item>
-			<dx-simple-item data-field="deliveryDate" editor-type="dxDateBox">
-				<dx-label text="Дата доставки"></dx-label>
-			</dx-simple-item>
-			<dx-simple-item
-				data-field="deliveryType"
-				editor-type="dxSelectBox"
-				:editor-options="deliveryTypeEditorOptions"
-			>
-				<dx-label text="Тип доставки"></dx-label>
-			</dx-simple-item>
-			<dx-simple-item data-field="fio">
-				<dx-label text="ФИО"></dx-label>
-			</dx-simple-item>
-			<dx-simple-item
-				data-field="amount"
-				editor-type="dxNumberBox"
-				:editor-options="amountEditorOptions"
-			>
-				<dx-label text="Сумма"></dx-label>
-			</dx-simple-item>
+	<dx-popup ref="popup" title="Создание заказа" width="90vw" height="70vh">
+		<dx-form v-model:form-data="form">
+			<dx-tabbed-item>
+				<dx-tab title="Товары">
+					<div class="products-data-grid">
+						<products-data-grid
+							:items="productItems"
+							ref="productDataGrid"
+						></products-data-grid>
+					</div>
+				</dx-tab>
+				<!-- <dx-tab title="Test">
+					<div><pre>{{ productItems }}</pre></div>
+				</dx-tab> -->
+			</dx-tabbed-item>
 		</dx-form>
 	</dx-popup>
 </template>
 
 <script setup lang="ts">
-import { ref, useTemplateRef } from 'vue';
-import { DxPopup, DxToolbarItem } from 'devextreme-vue/popup';
-import { DxForm, DxLabel, DxSimpleItem } from 'devextreme-vue/form';
+import { provide, ref, useTemplateRef } from 'vue';
+import type { ComponentExposed } from 'vue-component-type-helpers';
+import { DxPopup } from 'devextreme-vue/popup';
+import {
+	DxForm,
+	// DxLabel,
+	// DxSimpleItem,
+	DxTabbedItem,
+	DxTab,
+} from 'devextreme-vue/form';
 
-import { formatCurrency } from '@/shared/lib/utils/formatters';
+// import { formatCurrency } from '@/shared/lib/utils/formatters';
 // import { toFormat } from '@/shared/lib/utils/date';
-// import { useStore, type IOrderItem } from '../model';
 // import { generateNumber } from '@/shared/lib/utils/generate';
 type IOrderItem = unknown;
+import { useLoader } from '@/shared/lib/use/useLoader';
+import { useReactiveArray } from '@/shared/lib/use/base/useReactiveArray';
+import { ProductsDataGrid, type ProductTypes } from '@/entities/products';
+import { useOrderApi, type OrderTypes } from '@/entities/order';
 
-// const emit = defineEmits<{
-// 	(event: 'saved'): void;
-// }>();
+const { startLoading, stopLoading } = useLoader();
+const api = useOrderApi();
 const popupRef = useTemplateRef<InstanceType<typeof DxPopup>>('popup');
+const productsRef =
+	useTemplateRef<ComponentExposed<typeof ProductsDataGrid>>('productDataGrid');
 // const { orders } = useStore();
 function getDefaultForm(): IOrderItem {
 	return {
-		amount: 0,
-		orderDate: new Date(),
-		deliveryDate: new Date(),
-		deliveryType: '',
-		fio: '',
-		executorNumber: '',
-		customerNumber: null,
+		items: [],
 	};
 }
 const form = ref<IOrderItem>(getDefaultForm());
+const {
+	array: productItems,
+	reset: resetProductItems,
+	refresh: refreshProductItems,
+	push: addProductItem,
+} = useReactiveArray<ProductTypes.IListItem>();
+provide('addProductItem', addProductItem);
 
-function show() {
-	form.value = getDefaultForm();
+async function show(orderId?: OrderTypes.TOrderId) {
+	if (orderId) {
+		startLoading();
+		const order = await api.getItem(orderId);
+		stopLoading();
+		if (!order) {
+			return;
+		}
+
+		refreshProductItems(order.items);
+	} else {
+		resetProductItems();
+	}
+	productsRef.value?.reloadDataSource();
 	popupRef.value.instance.show();
 }
 defineExpose({ show });
-
-const deliveryTypeEditorOptions = {
-	items: ['Post', '5Post', 'Boxberry', 'Avito', 'Courier'],
-};
-const amountEditorOptions = {
-	min: 0,
-	format: formatCurrency,
-};
-
-const createButtonOptions = {
-	text: 'Создать',
-	stylingMode: 'outlined',
-	onClick: () => {
-		// validation
-		// orders.unshift({
-		// 	...form.value,
-		// 	orderDate: toFormat(form.value.orderDate),
-		// 	deliveryDate: toFormat(form.value.deliveryDate),
-		// 	customerNumber: form.value.customerNumber ?? -1,
-		// 	id: generateNumber(),
-		// });
-		// emit('saved');
-		popupRef.value.instance.hide();
-	},
-};
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.products-data-grid {
+	padding: 0 !important;
+	height: calc(70vh - 145px);
+}
+</style>
