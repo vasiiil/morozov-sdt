@@ -1,2 +1,2 @@
-import OrdersPage from './ui/OrdersPage.vue';
+import { OrdersPage } from './ui';
 export default OrdersPage;

@@ -1,15 +1,15 @@
 import type { IIdentified } from '@/shared/lib/types/object';
 import type { OrderStatusTypes } from '@/entities/order-status';
+import type { DeliveryTypeTypes } from '@/entities/delivery-types';
 
 export interface IListItem extends IIdentified {
 	id: string;
 	order_id: string;
 	status: OrderStatusTypes.TId;
-	status_name: OrderStatusTypes.IListItem['name'];
 	date_status: string | null;
 	date_create: string | null;
 	date_ship: string | null;
-	type: number;
+	type: DeliveryTypeTypes.TId;
 	delivery_code: number | null;
 	summ: number;
 	customer_name_full: string;
@@ -56,6 +56,33 @@ export type TDxDataGridFilters = {
 	date_status?: Date | [Date, Date];
 	date_ship?: Date | [Date, Date];
 	customer_name_full?: string;
-	type: number;
-	status: number | number[];
+	type: DeliveryTypeTypes.TId;
+	status: OrderStatusTypes.TId | OrderStatusTypes.TId[];
 };
+
+export interface ICustomer {
+	lastname: string;
+	firstname: string;
+	middlename: string;
+	phone: string;
+	phone2: string;
+	email: string;
+	company?: string;
+	inn?: string;
+	address?: string;
+	bank?: string;
+	r_s?: string;
+	bik?: string;
+	k_s?: string;
+}
+
+export interface IItem {
+	order_id: string;
+	id: string;
+	date_create: string;
+	status: OrderStatusTypes.TId;
+	substatus_name: string | null;
+	date_status: string;
+	order_sum: number;
+	payment_type: number;
+}
