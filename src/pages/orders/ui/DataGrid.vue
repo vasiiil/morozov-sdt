@@ -33,6 +33,13 @@
 			:formats="['xlsx']"
 		></dx-export>
 
+		<dx-column type="buttons" :width="110">
+			<dx-button
+				hint="Редактирование"
+				icon="edit"
+				@click="onEditIconClick"
+			></dx-button>
+		</dx-column>
 		<dx-column
 			data-field="order_id"
 			data-type="string"
@@ -147,6 +154,7 @@
 import { ref } from 'vue';
 import {
 	DxDataGrid,
+	DxButton,
 	DxColumn,
 	DxExport,
 	DxFilterRow,
@@ -156,6 +164,7 @@ import {
 	DxPager,
 	DxScrolling,
 	DxSorting,
+	type DxDataGridTypes,
 } from 'devextreme-vue/data-grid';
 
 import DataSource from 'devextreme/data/data_source';
@@ -170,11 +179,14 @@ import { deliveryTypeItems } from '@/entities/delivery-types';
 
 import { useOrderApi, type OrderTypes } from '@/entities/order';
 
+const emit = defineEmits<{
+	(event: 'editClick', value: OrderTypes.TOrderId): void;
+}>();
 const dataGridRef = ref<InstanceType<typeof DxDataGrid>>();
 const api = useOrderApi();
 
-const dataSource = new DataSource<OrderTypes.IListItem, 'id'>({
-	key: 'id',
+const dataSource = new DataSource<OrderTypes.IListItem, 'order_id'>({
+	key: 'order_id',
 	load: async (loadOptions) => {
 		let sort: OrderTypes.TSort | null = null;
 		if (loadOptions.sort) {
@@ -272,4 +284,16 @@ const typeLookupDataSource = {
 	}),
 	sort: { selector: 'id', desc: true },
 };
+
+function onEditIconClick(
+	event: DxDataGridTypes.ColumnButtonClickEvent<
+		OrderTypes.IListItem,
+		'order_id'
+	>,
+) {
+	if (!event.row) {
+		return;
+	}
+	emit('editClick', event.row.key);
+}
 </script>
