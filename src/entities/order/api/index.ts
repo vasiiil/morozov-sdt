@@ -2,10 +2,10 @@ import { useApi as _useApi } from '@/shared/api';
 import { convertDate } from '@/shared/lib/utils/date';
 import type { OrderTypes } from '@/entities/order';
 import { useOrderStatusStore } from '@/entities/order-status';
+import type { ProductTypes } from '@/entities/products';
 
-type TListItemResponse = Omit<OrderTypes.IListItem, 'status_name'>;
 type TListResponse = {
-	data: TListItemResponse[];
+	data: OrderTypes.IListItem[];
 	params: {
 		total: number;
 	};
@@ -13,6 +13,15 @@ type TListResponse = {
 type TListReturn = {
 	data: OrderTypes.IListItem[];
 	totalCount: number;
+};
+
+type TItemResopnse = {
+	data: {
+		items: ProductTypes.IListItem[];
+	}
+};
+type TItemReturn = {
+	items: ProductTypes.IListItem[];
 };
 
 export function useApi() {
@@ -51,6 +60,16 @@ export function useApi() {
 			};
 		}
 	}
+	async function getItem(
+		orderId: OrderTypes.TOrderId,
+	): Promise<TItemReturn | null> {
+		try {
+			const { data } = await api.get<TItemResopnse>(`/order/${orderId}`);
+			return data;
+		} catch {
+			return null;
+		}
+	}
 
-	return { getList };
+	return { getList, getItem };
 }

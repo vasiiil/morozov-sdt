@@ -2,9 +2,10 @@ import type { IIdentified } from '@/shared/lib/types/object';
 import type { OrderStatusTypes } from '@/entities/order-status';
 import type { DeliveryTypeTypes } from '@/entities/delivery-types';
 
+export type TOrderId = string;
 export interface IListItem extends IIdentified {
 	id: string;
-	order_id: string;
+	order_id: TOrderId;
 	status: OrderStatusTypes.TId;
 	date_status: string | null;
 	date_create: string | null;
