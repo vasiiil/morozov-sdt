@@ -11,9 +11,10 @@
 			label-mode="outside"
 			label-location="top"
 		>
-			<dx-group-item caption="Основная информация">
+			<dx-group-item caption="Основная информация" :col-count="2">
 				<dx-simple-item data-field="doc_id">
 					<dx-label text="Номер накладной внутренний" />
+					<dx-required-rule message="Номер накладной обязателен"></dx-required-rule>
 				</dx-simple-item>
 				<dx-simple-item
 					data-field="date_create"
@@ -62,6 +63,7 @@ import {
 	DxLabel,
 	DxSimpleItem,
 	DxGroupItem,
+	DxRequiredRule,
 } from 'devextreme-vue/form';
 
 import { useLoader } from '@/shared/lib/use/useLoader';

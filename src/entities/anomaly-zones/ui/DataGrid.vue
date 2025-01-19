@@ -8,6 +8,8 @@
 		:column-min-width="50"
 		:sync-lookup-filter-values="false"
 		:remote-operations="{ paging: true, filtering: true }"
+		:show-row-lines="false"
+		:row-alternation-enabled="true"
 		width="100%"
 		height="100%"
 		ref="dataGridRef"
@@ -16,7 +18,6 @@
 		<dx-pager
 			:visible="true"
 			:show-page-size-selector="true"
-			:show-info="true"
 			:show-navigation-buttons="true"
 			display-mode="full"
 		></dx-pager>
@@ -157,6 +158,9 @@ function onAnomalyIdClick(anomalyId: IListItem['anomaly_id']) {
 	&:hover {
 		text-decoration: underline;
 		cursor: pointer;
+	}
+	tr.dx-state-hover & {
+		color: white;
 	}
 }
 </style>

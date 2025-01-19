@@ -15,7 +15,6 @@
 			:visible="true"
 			:display-mode="'full'"
 			:show-page-size-selector="true"
-			:show-info="true"
 			:show-navigation-buttons="true"
 		></dx-pager>
 		<dx-scrolling mode="virtual"></dx-scrolling>
@@ -55,13 +54,17 @@
 		<dx-column
 			data-field="photos"
 			data-type="string"
-			caption="Штрих-код"
+			caption="Фото"
 			:width="300"
 			cell-template="photo-cell"
 		></dx-column>
 
 		<template #photo-cell="{ data: { data } }">
-			{{ data }}
+			<dx-button
+				styling-mode="outlined"
+				text="Посмотреть"
+				@click="onPhotoButtonClick(data.item_id)"
+			/>
 		</template>
 	</dx-data-grid>
 </template>
@@ -77,6 +80,7 @@ import {
 	type DxDataGridTypes,
 } from 'devextreme-vue/data-grid';
 import CustomStore from 'devextreme/data/custom_store';
+import { DxButton } from 'devextreme-vue/button';
 
 import { formatInteger } from '@/shared/lib/utils/formatters';
 import type { ICardProductListItem } from '../config';
@@ -97,5 +101,10 @@ defineExpose({ reloadDataSource });
 
 function barcodeCell(event: DxDataGridTypes.ColumnCustomizeTextArg) {
 	return event.value?.join(', ') ?? event.valueText;
+}
+
+function onPhotoButtonClick(itemId: ICardProductListItem['item_id']) {
+	console.log('onPhotoButtonClick', itemId);
+
 }
 </script>

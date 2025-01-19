@@ -1,0 +1,115 @@
+$text-color: #09233A;
+$main-row-color: #e5edff;
+$alt-row-color: #c8d9ff;
+$hover-row-color: #4c9cca;
+$orange-border-color: #ffa15d;
+.dx-datagrid {
+  color: $text-color;
+	.dx-datagrid-table {
+		border-collapse: separate;
+		border-spacing: 0 10px;
+		margin-top: -10px;
+
+		.dx-header-row {
+			background-color: $main-row-color;
+			> td {
+				border-bottom: 1px solid $orange-border-color;
+			}
+		}
+		.dx-datagrid-filter-row {
+			background-color: $alt-row-color;
+      .dx-editor-cell {
+        .dx-texteditor:not(.dx-tagbox) {
+          .dx-texteditor-input {
+            height: 32px;
+            line-height: 32px;
+            margin: 8px;
+            padding: 0;
+            border-bottom: 1px solid black;
+          }
+          &.dx-datebox {
+            .dx-texteditor-input {
+              padding-left: 32px;
+            }
+          }
+        }
+      }
+		}
+		.dx-data-row {
+			background-color: $main-row-color;
+			&.dx-row-alt {
+				td {
+					background-color: $alt-row-color;
+				}
+			}
+			&.dx-state-hover {
+				&:not(.dx-selection):not(.dx-row-inserted):not(.dx-row-removed):not(
+						.dx-edit-row
+					):not(.dx-row-focused) {
+					> td {
+						background-color: $hover-row-color;
+
+            // .dx-button {
+            //   &.dx-button-mode-outlined {
+            //     &.dx-button-default {
+            //       color: white;
+            //       border-color: white;
+            //       :hover {
+            //         color: $hover-row-color;
+            //       }
+            //     }
+            //   }
+            // }
+					}
+				}
+			}
+		}
+	}
+
+	.dx-datagrid-pager {
+    .dx-pages .dx-page-indexes, .dx-page-sizes {
+      display: flex;
+      gap: 20px;
+    }
+		.dx-page, .dx-page-size {
+			min-width: 60px;
+      margin: 0;
+			text-align: center;
+			border-radius: 30px;
+			font-size: 18px;
+			line-height: 18px;
+			padding: 8px 12px;
+			background-color: $alt-row-color;
+
+			&.dx-selection {
+				background-color: $hover-row-color;
+			}
+		}
+    .dx-navigate-button {
+      color: $hover-row-color;
+      align-self: center;
+    }
+	}
+}
+
+.dx-popup-wrapper {
+  .dx-toolbar {
+    background-color: $alt-row-color;
+    color: $text-color;
+  }
+}
+
+.dx-form {
+  .dx-texteditor {
+    border: none;
+    &, &.dx-state-readonly {
+      background-color: $main-row-color;
+      box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.25);
+    }
+    &.dx-state-focused {
+      &::before {
+        border-bottom: 1px solid $orange-border-color;
+      }
+    }
+  }
+}
