@@ -9,11 +9,19 @@ const _router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
 	routes: [
 		{
-			path: '/',
-			name: 'home',
+			path: '/orders',
+			name: 'ordersPage',
 			component: () => import('@/pages/orders'),
 			meta: {
 				title: 'SDT Orders',
+			},
+		},
+		{
+			path: '/anomaly-zones',
+			name: 'anomalyZonesPage',
+			component: () => import('@/pages/anomaly-zones'),
+			meta: {
+				title: 'SDT Anomaly Zones',
 			},
 		},
 	],
