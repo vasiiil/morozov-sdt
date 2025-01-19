@@ -1,6 +1,6 @@
 import { useApi as _useApi } from '@/shared/api';
-import { convertDate } from '@/shared/lib/utils/date';
-import type { IListItem, TFilter } from '../config';
+import { convertDate, toDate } from '@/shared/lib/utils/date';
+import type { IListItem, IItem, TFilter, IItemResponse } from '../config';
 type TListResponse = {
 	data: IListItem[];
 	params: {
@@ -11,6 +11,11 @@ type TListReturn = {
 	data: IListItem[];
 	totalCount: number;
 };
+
+type TItemResopnse = {
+	data: IItemResponse;
+};
+type TItemReturn = IItem;
 
 export function useApi() {
 	const api = _useApi();
@@ -40,19 +45,24 @@ export function useApi() {
 			};
 		}
 	}
-	// async function getItem(
-	// 	orderId: OrderTypes.TOrderId,
-	// ): Promise<TItemReturn | null> {
-	// 	try {
-	// 		const { data } = await api.get<TItemResopnse>(`/order/${orderId}`);
-	// 		return data;
-	// 	} catch {
-	// 		return null;
-	// 	}
-	// }
+	async function getItem(
+		id: IListItem['anomaly_id'],
+	): Promise<TItemReturn | null> {
+		try {
+			const { data } = await api.get<TItemResopnse>(`/anomaly/${id}`);
+
+			return {
+				...data,
+				date_create: toDate(data.date_create),
+				date_final_status: toDate(data.date_final_status),
+			};
+		} catch {
+			return null;
+		}
+	}
 
 	return {
 		getList,
-		// getItem
+		getItem,
 	};
 }

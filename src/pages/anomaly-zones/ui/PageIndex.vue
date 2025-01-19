@@ -2,20 +2,22 @@
 	<div class="page-wrapper page">
 		<h2 class="page-title">Anomaly Zones</h2>
 		<div class="page-data-table">
-			<data-grid></data-grid>
+			<data-grid @edit-click="onEditClick"></data-grid>
+			<popup-card ref="card"></popup-card>
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
-// import { useTemplateRef } from 'vue';
-// import type { ComponentExposed } from 'vue-component-type-helpers';
-import { DataGrid } from '@/entities/anomaly-zones';
+import { useTemplateRef } from 'vue';
+import type { ComponentExposed } from 'vue-component-type-helpers';
+import { DataGrid, PopupCard } from '@/entities/anomaly-zones';
+import type { IAnomalyZoneListItem } from '@/entities/anomaly-zones';
 
-// const cardRef = useTemplateRef<ComponentExposed<typeof OrderCard>>('card');
-// function onEditClick(orderId: OrderTypes.TOrderId) {
-// 	cardRef.value?.show(orderId);
-// }
+const cardRef = useTemplateRef<ComponentExposed<typeof PopupCard>>('card');
+function onEditClick(orderId: IAnomalyZoneListItem['anomaly_id']) {
+	cardRef.value?.show(orderId);
+}
 </script>
 
 <style lang="scss" scoped>
