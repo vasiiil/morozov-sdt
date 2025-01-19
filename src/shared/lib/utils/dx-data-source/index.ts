@@ -4,6 +4,10 @@ export function parseFilter<T = Record<string, unknown>>(filter: unknown): T | n
 	}
 	const result = {};
 	function _parseFilter(filter: unknown) {
+		if ('filterValue' in filter) {
+			filter = [filter];
+		}
+
 		for (const filterItem of filter) {
 			if (typeof filterItem === 'string') {
 				continue;
