@@ -1,93 +1,127 @@
 <template>
 	<div class="layout">
-		<div class="layout-header">
-			<dx-toolbar :element-attr="{ class: 'layout-header-toolbar' }">
-				<dx-toolbar-item location="before">
-					<i class="dx-icon dx-icon-menu"></i>
-				</dx-toolbar-item>
-				<dx-toolbar-item location="before">
-					<div class="title">SDT <span class="text-smaller">ООО СОЛФЕРИНО (WMS СДТ К2)</span></div>
-				</dx-toolbar-item>
-				<dx-toolbar-item location="after">
-					<i class="dx-icon dx-icon-help"></i>
-				</dx-toolbar-item>
-				<dx-toolbar-item location="after">
-					<i class="dx-icon dx-icon-bell"></i>
-				</dx-toolbar-item>
-				<dx-toolbar-item location="after">
-					<i class="dx-icon dx-icon-user"></i>
-				</dx-toolbar-item>
-				<dx-toolbar-item location="after">
-					<i class="dx-icon dx-icon-smalliconslayout"></i>
-				</dx-toolbar-item>
-			</dx-toolbar>
-		</div>
 		<div class="layout-menu"></div>
-		<div class="layout-content">
-			<slot></slot>
+		<div class="layout-page">
+			<div class="layout-page-header max-content-width">
+				<div class="layout-page-header-section start">
+					<div class="logo">
+						<img
+							src="/static/HeaderLogo.svg"
+							alt="Логотип"
+						/>
+					</div>
+					<div class="support texts">
+						<div class="text">Поддержка</div>
+						<div class="text">8 800 123 45 67</div>
+					</div>
+				</div>
+				<div class="layout-page-header-section end">
+					<div class="customer texts">
+						<div class="text name">Иванов И. И.</div>
+						<div class="text">ООО «Рога и копыта»</div>
+					</div>
+					<div class="logout-button">
+						<dx-button
+							text="Выйти"
+							icon="login"
+							styling-mode="outlined"
+							@click="onLogoutClick"
+						/>
+					</div>
+				</div>
+			</div>
+			<div class="layout-page-content max-content-width">
+				<slot></slot>
+			</div>
 		</div>
 	</div>
 </template>
 
 <script setup lang="ts">
-import { DxToolbar, DxItem as DxToolbarItem } from 'devextreme-vue/toolbar';
+import { DxButton } from 'devextreme-vue';
+function onLogoutClick() {}
 </script>
 
 <style lang="scss" scoped>
-$header-height: 36px;
-$menu-width: 40px;
+$header-height: 130px;
+$menu-width: 100px;
+$max-content-width: 1530px;
+$gap: 30px;
 .layout {
 	width: 100%;
 	height: 100%;
-	display: grid;
-	grid-template-columns: $menu-width calc(100% - $menu-width);
-	grid-template-rows: $header-height calc(100% - $header-height);
-	grid-template-areas:
-		'header header'
-		'menu content';
+	display: flex;
 
-	&-header {
-		grid-area: header;
+	&-menu {
+		width: $menu-width;
+		background-color: var(--sdt-primary);
+	}
 
-		&-toolbar {
-			background-color: var(--sdt-c-black);
-			border: none;
-			border-radius: 0;
-			padding-left: 0;
-			color: var(--sdt-c-white);
+	&-page {
+		width: calc(100% - $menu-width);
+		padding: 0 30px;
 
-			.title {
+		.max-content-width {
+			width: 100%;
+			max-width: $max-content-width;
+		}
+
+		&-header {
+			padding: 20px 0;
+			color: var(--sdt-primary);
+
+			width: 100%;
+			height: $header-height;
+			display: flex;
+			justify-content: space-between;
+			border-bottom: 1px solid #476981;
+			margin-bottom: $gap;
+
+			.texts {
+				align-self: center;
+			}
+
+			.text {
+				font-size: 24px;
+				font-weight: 700;
+			}
+
+			&-section {
 				display: flex;
-				gap: 5px;
-				align-items: center;
-				font-size: 16px;
+				gap: 20px;
+				&.start {
+					gap: 30px;
+				}
 
-				.text-smaller {
-					font-size: 0.8em;
+				.logout-button {
+					width: 90px;
+					height: 90px;
+					::v-deep(.dx-button) {
+						width: 100%;
+						height: 100%;
+						.dx-button-content {
+							display: flex;
+							flex-direction: column;
+							padding: 0;
+							.dx-icon {
+								width: 80px;
+								height: 60px;
+								font-size: 65px;
+							}
+							.dx-button-text {
+								font-size: 18px;
+							}
+						}
+					}
 				}
 			}
-
-			.dx-icon-menu {
-				width: $menu-width;
-				text-align: center;
-			}
-
-			.icons-container {
-				display: flex;
-				gap: 1rem;
-			}
 		}
-	}
-	&-menu {
-		grid-area: menu;
-		border-right: 1px solid var(--color-border);
-	}
-	&-content {
-		width: 100%;
-		height: 100%;
-		padding: 12px 8px;
-		grid-area: content;
-		overflow: hidden;
+
+		&-content {
+			height: calc(100% - $header-height - $gap);
+			width: 100%;
+			overflow: hidden;
+		}
 	}
 }
 </style>
