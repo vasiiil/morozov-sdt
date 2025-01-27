@@ -1,46 +1,36 @@
 /* color palette from <https://github.com/vuejs/theme> */
 :root {
-	--vt-c-white: #ffffff;
-	--vt-c-white-soft: #f8f8f8;
-	--vt-c-white-mute: #f2f2f2;
-
-	--vt-c-black: #181818;
-	--vt-c-black-soft: #222222;
-	--vt-c-black-mute: #282828;
-
-	--vt-c-indigo: #2c3e50;
-
-	--vt-c-divider-light-1: rgba(60, 60, 60, 0.29);
-	--vt-c-divider-light-2: rgba(60, 60, 60, 0.12);
-	--vt-c-divider-dark-1: rgba(84, 84, 84, 0.65);
-	--vt-c-divider-dark-2: rgba(84, 84, 84, 0.48);
-
-	--vt-c-text-light-1: var(--vt-c-indigo);
-	--vt-c-text-light-2: rgba(60, 60, 60, 0.66);
-	--vt-c-text-dark-1: var(--vt-c-white);
-	--vt-c-text-dark-2: rgba(235, 235, 235, 0.64);
-
 	--sdt-c-black: #000000;
+	--sdt-c-black-soft: #2d2f39;
 	--sdt-c-white: #ffffff;
+	--sdt-c-white-soft: #f5f6fa;
+	--sdt-c-white-80: rgba(255, 255, 255, 0.8);
+	--sdt-c-white-50: rgba(255, 255, 255, 0.5);
+	--sdt-c-white-10: rgba(255, 255, 255, 0.1);
 	--sdt-c-orange: #f29015;
+	--sdt-c-blue: #0900ff;
+	--sdt-c-calestical-blue: #4c9cca;
+	--sdt-c-calestical-blue-soft: rgba(76, 156, 202, 0.65);
+	--sdt-c-calestical-blue-dark: #476981;
+	--sdt-c-lavender: #e5edff;
+	--sdt-c-lavender-blue: #c8d9ff;
 	--sdt-c-purple: #393186;
 
-	--sdt-primary: #09233a;
+	--sdt-c-primary: #09233a;
 }
 
 /* semantic color variables for this project */
 :root {
-	--color-background: var(--vt-c-white);
-	--color-background-soft: var(--vt-c-white-soft);
-	--color-background-mute: var(--vt-c-white-mute);
+	--color-background: var(--sdt-c-white);
+	--color-background-soft: var(--sdt-c-white-soft);
+	/* --color-background-mute: var(--vt-c-white-mute); */
 
-	--color-border: var(--vt-c-divider-light-2);
-	--color-border-hover: var(--vt-c-divider-light-1);
+	/* --color-border: var(--vt-c-divider-light-2);
+	--color-border-hover: var(--vt-c-divider-light-1); */
+  --color-border-focused: var(--sdt-c-orange);
 
-	--color-heading: var(--sdt-primary);
-	--color-text: var(--sdt-primary);
-
-	--section-gap: 160px;
+	--color-heading: var(--sdt-c-primary);
+	--color-text: var(--sdt-c-primary);
 }
 
 /* @media (prefers-color-scheme: dark) {
@@ -94,4 +84,8 @@ body {
 	text-rendering: optimizeLegibility;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
+}
+
+#app {
+  color: var(--color-text);
 }
