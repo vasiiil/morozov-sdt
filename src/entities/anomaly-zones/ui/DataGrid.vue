@@ -1,7 +1,6 @@
 <template>
 	<dx-data-grid
 		:data-source="dataSource"
-		:hover-state-enabled="true"
 		:allow-column-reordering="true"
 		:allow-column-resizing="true"
 		:show-borders="true"
@@ -23,6 +22,7 @@
 		></dx-pager>
 		<dx-scrolling mode="virtual"></dx-scrolling>
 		<dx-filter-row :visible="true" apply-filter="auto"></dx-filter-row>
+		<dx-selection mode="multiple"></dx-selection>
 
 		<dx-column
 			data-field="anomaly_id"
@@ -108,6 +108,7 @@ import {
 	DxPaging,
 	DxPager,
 	DxScrolling,
+	DxSelection,
 } from 'devextreme-vue/data-grid';
 
 import DataSource from 'devextreme/data/data_source';
@@ -158,9 +159,6 @@ function onAnomalyIdClick(anomalyId: IListItem['anomaly_id']) {
 	&:hover {
 		text-decoration: underline;
 		cursor: pointer;
-	}
-	tr.dx-state-hover & {
-		color: white;
 	}
 }
 </style>
