@@ -9,6 +9,14 @@ const _router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
 	routes: [
 		{
+			path: '/under-construction',
+			name: 'underConstruction',
+			component: () => import('@/app/layouts/UnderConstruction.vue'),
+			meta: {
+				title: 'SDT',
+			},
+		},
+		{
 			path: '/orders',
 			name: 'ordersPage',
 			component: () => import('@/pages/orders'),
