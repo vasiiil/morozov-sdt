@@ -9,68 +9,91 @@
 				:icon="menuOpened ? 'chevronleft' : 'chevronright'"
 				@click="onToggleMenuClick"
 			/>
-			<dx-accordion
-				:items="menuItems"
-				:collapsible="true"
-				:multiple="true"
-				v-model:selected-items="selectedMenuItems"
-				item-title-template="itemTitle"
-				@item-title-click="onMenuTitleClick"
-			>
-				<template #itemTitle="{ data }">
-					<div>
+			<dx-scroll-view height="100%">
+				<dx-accordion
+					:items="menuItems"
+					:collapsible="true"
+					:multiple="true"
+					v-model:selected-items="selectedMenuItems"
+					item-title-template="itemTitle"
+					@item-title-click="onMenuTitleClick"
+				>
+					<template #itemTitle="{ data }">
 						<div
-							class="menu-title"
-							:class="{
-								active:
-									route.name !== 'underConstruction' &&
-									menuItemsPathNames.get(data.id)?.has(route.name as string),
-							}"
+							@mouseenter="hoverMenuTitle(data.id)"
+							@mouseleave="unsetHeveredMenuTitle"
 						>
-							<i
-								class="dx-icon"
-								:class="`dx-icon-${data.icon}`"
-							></i>
-							<span
-								class="text"
-								v-show="menuOpened"
-							>
-								{{ data.text }}
-							</span>
-							<i
-								v-show="menuOpened && !data.disabled"
-								class="dx-icon"
+							<div
+								class="menu-title"
 								:class="{
-									'dx-icon-chevrondown': !selectedMenuIds.has(data.id),
-									'dx-icon-chevronup': selectedMenuIds.has(data.id),
+									active:
+										route.name !== 'underConstruction' &&
+										(menuItemsPathNames
+											.get(data.id)
+											?.has(route.name as string) ||
+											route.name === data.pathName),
 								}"
-							></i>
+							>
+								<component
+									:is="data.icon"
+									:size="26"
+									:active="
+										(route.name !== 'underConstruction' &&
+											(menuItemsPathNames
+												.get(data.id)
+												?.has(route.name as string) ||
+												route.name === data.pathName)) ||
+										hoveredMenuTitle === data.id
+									"
+								></component>
+								<span
+									class="text"
+									v-show="menuOpened"
+								>
+									{{ data.text }}
+								</span>
+								<i
+									v-show="menuOpened && !data.disabled && !!data.items"
+									class="dx-icon"
+									:class="{
+										'dx-icon-chevrondown': !selectedMenuIds.has(data.id),
+										'dx-icon-chevronup': selectedMenuIds.has(data.id),
+									}"
+								></i>
+							</div>
 						</div>
-					</div>
-				</template>
-				<template #item="{ data }">
-					<div
-						class="menu-second-level"
-						v-for="(item, index) of data.items"
-						:key="`menu-item-${data.id}-${index}`"
-					>
-						<div class="connector">
-							<div class="top"></div>
-							<div class="bottom"></div>
-						</div>
-						<router-link
-							class="text"
-							:class="{
-								disabled: item.disabled,
-								active: route.name === item.pathName,
-							}"
-							:to="{ name: item.pathName }"
+					</template>
+					<template #item="{ data }">
+						<div
+							class="dx-item-content dx-accordion-item-body"
+							:class="{ 'empty-item-body': !data.items }"
 						>
-							{{ item.text }}
-						</router-link>
-					</div>
-				</template>
-			</dx-accordion>
+							<div
+								class="menu-second-level"
+								v-for="(item, index) of data.items"
+								:key="`menu-item-${data.id}-${index}`"
+							>
+								<div class="connector">
+									<div class="top"></div>
+									<div class="bottom"></div>
+								</div>
+								<router-link
+									class="text"
+									:class="{
+										disabled: item.disabled,
+										active:
+											route.name !== 'underConstruction' &&
+											route.name === item.pathName,
+									}"
+									:to="{ name: item.pathName }"
+								>
+									{{ item.text }}
+								</router-link>
+							</div>
+						</div>
+					</template>
+				</dx-accordion>
+			</dx-scroll-view>
 		</div>
 		<div class="layout-page">
 			<div class="layout-page-header max-content-width">
@@ -112,17 +135,19 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, ref } from 'vue';
-import { useRoute } from 'vue-router';
-import { DxSelectBox, DxAccordion } from 'devextreme-vue';
+import { computed, defineAsyncComponent, onMounted, ref } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
+import { DxSelectBox, DxAccordion, DxScrollView } from 'devextreme-vue';
+import type { DxAccordionTypes } from 'devextreme-vue/accordion';
 
 import { useBoolean } from '@/shared/lib/use/base/useBoolean';
 import { BaseButton } from '@/shared/ui';
 
 interface IMenu {
 	id: string;
-	icon: string;
+	icon: unknown;
 	text: string;
+	pathName?: string;
 	disabled?: boolean;
 	items?: {
 		text: string;
@@ -133,6 +158,7 @@ interface IMenu {
 function onLogoutClick() {}
 const companies = ['ООО "Рога"', 'ООО "Копыта"'];
 
+const router = useRouter();
 const route = useRoute();
 const {
 	value: menuOpened,
@@ -149,23 +175,17 @@ function onToggleMenuClick() {
 const menuItems: IMenu[] = [
 	{
 		id: 'home',
-		icon: 'home',
+		icon: defineAsyncComponent(
+			() => import('@/assets/menu-icons/DashboardIcon.vue'),
+		),
 		text: 'Dashboard',
-		items: [
-			{
-				text: 'Test',
-				pathName: 'underConstruction',
-				disabled: true,
-			},
-			{
-				text: 'Test 2',
-				pathName: 'underConstruction',
-			},
-		],
+		pathName: 'underConstruction',
 	},
 	{
 		id: 'orders',
-		icon: 'ordersbox',
+		icon: defineAsyncComponent(
+			() => import('@/assets/menu-icons/OrdersIcon.vue'),
+		),
 		text: 'Заказы',
 		items: [
 			{
@@ -177,19 +197,75 @@ const menuItems: IMenu[] = [
 				pathName: 'underConstruction',
 				disabled: true,
 			},
-			{
-				text: 'Аномалии',
-				pathName: 'anomalyZonesPage',
-			},
 		],
 	},
 	{
 		id: 'waybills',
-		icon: 'print',
+		icon: defineAsyncComponent(
+			() => import('@/assets/menu-icons/WaybillsIcon.vue'),
+		),
 		text: 'Накладные',
-		disabled: true,
+		items: [
+			{
+				text: 'Просмотр поставок',
+				pathName: 'underConstruction',
+			},
+			{
+				text: 'Поставщики',
+				pathName: 'underConstruction',
+			},
+			{
+				text: 'Управление отгрузками',
+				pathName: 'underConstruction',
+			},
+			{
+				text: 'Перемещение товаров (трансфер)',
+				pathName: 'underConstruction',
+			},
+		],
+	},
+	{
+		id: 'products',
+		icon: defineAsyncComponent(
+			() => import('@/assets/menu-icons/ProductsIcon.vue'),
+		),
+		text: 'Товары',
+		pathName: 'underConstruction',
+	},
+	{
+		id: 'anomalies',
+		icon: defineAsyncComponent(
+			() => import('@/assets/menu-icons/AnomaliesIcon.vue'),
+		),
+		text: 'Аномалии',
+		pathName: 'anomalyZonesPage',
+	},
+	{
+		id: 'transport-ordering',
+		icon: defineAsyncComponent(
+			() => import('@/assets/menu-icons/TransportOrderingIcon.vue'),
+		),
+		text: 'Заказ транспорта',
+		pathName: 'underConstruction',
+	},
+	{
+		id: 'reports',
+		icon: defineAsyncComponent(
+			() => import('@/assets/menu-icons/ReportsIcon.vue'),
+		),
+		text: 'Отчеты',
+		pathName: 'underConstruction',
 	},
 ];
+
+const hoveredMenuTitle = ref<string | null>(null);
+function hoverMenuTitle(id: string) {
+	hoveredMenuTitle.value = id;
+}
+function unsetHeveredMenuTitle() {
+	hoveredMenuTitle.value = null;
+}
+
 const selectedMenuItems = ref<IMenu[]>([]);
 const selectedMenuIds = computed(
 	() => new Set(selectedMenuItems.value.map((item) => item.id)),
@@ -208,8 +284,11 @@ onMounted(() => {
 		menuItemsPathNames.value.set(menuItem.id, pathNames);
 	}
 });
-function onMenuTitleClick() {
+function onMenuTitleClick(event: DxAccordionTypes.ItemTitleClickEvent<IMenu>) {
 	openMenu();
+	if (event.itemData?.pathName) {
+		router.push({ name: event.itemData.pathName });
+	}
 }
 </script>
 
@@ -258,6 +337,7 @@ $gap: 30px;
 				& > .dx-accordion-item-title {
 					color: var(--sdt-c-white-50);
 					background-color: unset;
+					min-height: 52px;
 					&:hover,
 					&:has(.menu-title.active) {
 						color: var(--sdt-c-white);
@@ -273,6 +353,9 @@ $gap: 30px;
 			}
 			.dx-accordion-item-body {
 				padding-right: 0;
+				&.empty-item-body {
+					padding: 0;
+				}
 			}
 
 			.menu-title {
@@ -280,6 +363,7 @@ $gap: 30px;
 				display: grid;
 				gap: 12px;
 				grid-template-columns: 20px 1fr 20px;
+				align-items: center;
 
 				.dx-icon {
 					font-size: 26px;
