@@ -33,13 +33,19 @@ const elementAttr = {
 .sdt-button {
 	color: var(--color-text);
 	border-color: var(--color-text);
-	border-radius: 3px;
+	border-radius: 4px;
 	&.icon-circle-border {
 		::v-deep(.dx-icon) {
 			font-size: 14px;
 			border: 1px solid var(--color-text);
 			border-radius: 50%;
 		}
+	}
+	&.dx-button-mode-outlined {
+		border-top-width: .5px;
+		border-right-width: 1.5px;
+		border-bottom-width: 1.5px;
+		border-left-width: .5px;
 	}
 }
 </style>
