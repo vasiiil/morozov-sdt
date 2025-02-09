@@ -9,6 +9,15 @@ const _router = createRouter({
 	history: createWebHistory(import.meta.env.BASE_URL),
 	routes: [
 		{
+			path: '/login',
+			name: 'login',
+			component: () => import('@/pages/login'),
+			meta: {
+				title: 'SDT Login',
+				layout: 'simple',
+			},
+		},
+		{
 			path: '/under-construction',
 			name: 'underConstruction',
 			component: () => import('@/app/layouts/UnderConstruction.vue'),
