@@ -2,7 +2,7 @@
 	<dx-popup
 		ref="popup"
 		title="Аномалия"
-		width="90vw"
+		width="50vw"
 		height="70vh"
 	>
 		<dx-form
@@ -11,10 +11,15 @@
 			label-mode="outside"
 			label-location="top"
 		>
-			<dx-group-item caption="Основная информация" :col-count="2">
+			<dx-group-item
+				caption="Основная информация"
+				:col-count="2"
+			>
 				<dx-simple-item data-field="doc_id">
 					<dx-label text="Номер накладной внутренний" />
-					<dx-required-rule message="Номер накладной обязателен"></dx-required-rule>
+					<dx-required-rule
+						message="Номер накладной обязателен"
+					></dx-required-rule>
 				</dx-simple-item>
 				<dx-simple-item
 					data-field="date_create"
@@ -114,6 +119,5 @@ const statusEditorOptions = {
 <style lang="scss" scoped>
 .products-data-grid {
 	padding: 0 !important;
-	height: calc(70vh - 145px);
 }
 </style>

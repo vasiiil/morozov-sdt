@@ -7,10 +7,11 @@
 		:show-borders="true"
 		:column-min-width="50"
 		width="100%"
-		height="100%"
+		height="auto"
+		max-height="320px"
 		ref="dataGridRef"
 	>
-		<dx-paging :page-size="50"></dx-paging>
+		<dx-paging :page-size="5"></dx-paging>
 		<dx-pager
 			:visible="true"
 			:display-mode="'full'"
