@@ -31,6 +31,8 @@
 
 	--color-heading: var(--sdt-c-primary);
 	--color-text: var(--sdt-c-primary);
+
+  --color-input-background: var(--sdt-c-lavender);
 }
 
 /* @media (prefers-color-scheme: dark) {
