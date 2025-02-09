@@ -115,7 +115,9 @@ $button-hover-color: var(--sdt-c-calestical-blue);
 
 .dx-popup-wrapper {
 	.dx-toolbar {
-		background-color: $row-alt-color;
+		&:not(.dx-popup-bottom) {
+			background-color: $row-alt-color;
+		}
 		color: $text-color;
 	}
 }
