@@ -41,33 +41,6 @@ const borderRadius = getHTMLSize(_borderRadius, '4px');
 
 <style lang="scss" scoped>
 .sdt-button {
-	color: var(--color-text);
-	border-color: var(--color-text);
 	border-radius: v-bind(borderRadius);
-	&.icon-circle-border {
-		::v-deep(.dx-icon) {
-			font-size: 14px;
-			border: 1px solid var(--color-text);
-			border-radius: 50%;
-		}
-		&.dx-state-hover {
-			::v-deep(.dx-icon) {
-				border-color: var(--sdt-c-white);
-			}
-		}
-	}
-	&.dx-button-mode-outlined {
-		border-top-width: 0.5px;
-		border-right-width: 1.5px;
-		border-bottom-width: 1.5px;
-		border-left-width: 0.5px;
-	}
-	&.dx-state-hover {
-		background-color: var(--color-background-hover);
-		&,
-		::v-deep(.dx-icon) {
-			color: var(--sdt-c-white);
-		}
-	}
 }
 </style>
