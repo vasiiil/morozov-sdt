@@ -61,17 +61,20 @@
 		></dx-column>
 
 		<template #photo-cell="{ data: { data } }">
-			<dx-button
+			<base-button
 				styling-mode="outlined"
 				text="Посмотреть"
-				@click="onPhotoButtonClick(data.item_id)"
-			/>
+				:visible="data.photos.length > 0"
+				@click="onPhotoButtonClick(data)"
+			></base-button>
 		</template>
 	</dx-data-grid>
+	<product-photos-popup ref="photos"></product-photos-popup>
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, useTemplateRef } from 'vue';
+import type { ComponentExposed } from 'vue-component-type-helpers';
 import {
 	DxDataGrid,
 	DxColumn,
@@ -81,10 +84,11 @@ import {
 	type DxDataGridTypes,
 } from 'devextreme-vue/data-grid';
 import CustomStore from 'devextreme/data/custom_store';
-import { DxButton } from 'devextreme-vue/button';
 
+import { BaseButton } from '@/shared/ui';
 import { formatInteger } from '@/shared/lib/utils/formatters';
 import type { ICardProductListItem } from '../config';
+import ProductPhotosPopup from './ProductPhotosPopup.vue';
 
 const { items } = defineProps<{
 	items: ICardProductListItem[];
@@ -93,7 +97,24 @@ const dataGridRef = ref<InstanceType<typeof DxDataGrid>>();
 const store = new CustomStore({
 	key: 'item_id',
 	loadMode: 'raw',
-	load: () => items,
+	load: () => {
+		return items.map((item) => {
+			if (item.item_id % 2) {
+				item.photos.push(
+					'JPEG_d8db65ba63e81f03_20250210_084920.jpg',
+					'JPEG_d8db65ba63e81f03_20250210_084926.jpg',
+					'JPEG_d8db65ba63e81f03_20250210_084802.jpg',
+				);
+			} else {
+				item.photos.push(
+					'JPEG_d8db65ba63e81f03_20250210_084810.jpg',
+					'JPEG_d8db65ba63e81f03_20250210_084842.jpg',
+					'JPEG_d8db65ba63e81f03_20250210_084849.jpg',
+				);
+			}
+			return item;
+		});
+	},
 });
 function reloadDataSource() {
 	dataGridRef.value.instance.getDataSource().reload();
@@ -104,8 +125,9 @@ function barcodeCell(event: DxDataGridTypes.ColumnCustomizeTextArg) {
 	return event.value?.join(', ') ?? event.valueText;
 }
 
-function onPhotoButtonClick(itemId: ICardProductListItem['item_id']) {
-	console.log('onPhotoButtonClick', itemId);
-
+const photosRef =
+	useTemplateRef<ComponentExposed<typeof ProductPhotosPopup>>('photos');
+function onPhotoButtonClick(item: ICardProductListItem) {
+	photosRef.value?.open(item.photos);
 }
 </script>

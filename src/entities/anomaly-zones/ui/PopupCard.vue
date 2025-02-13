@@ -25,7 +25,7 @@
 				:col-count="2"
 			>
 				<dx-simple-item data-field="doc_id">
-					<dx-label text="Номер накладной внутренний" />
+					<dx-label text="Номер накладной внутренний"></dx-label>
 					<dx-required-rule
 						message="Номер накладной обязателен"
 					></dx-required-rule>
@@ -34,26 +34,26 @@
 					data-field="date_create"
 					editor-type="dxDateBox"
 				>
-					<dx-label text="Дата создания" />
+					<dx-label text="Дата создания"></dx-label>
 				</dx-simple-item>
 				<dx-simple-item
 					data-field="status"
 					editor-type="dxSelectBox"
 					:editor-options="statusEditorOptions"
 				>
-					<dx-label text="Статус" />
+					<dx-label text="Статус"></dx-label>
 				</dx-simple-item>
 				<dx-simple-item
 					data-field="date_final_status"
 					editor-type="dxDateBox"
 				>
-					<dx-label text="Дата статуса" />
+					<dx-label text="Дата статуса"></dx-label>
 				</dx-simple-item>
 				<dx-simple-item data-field="task_id">
-					<dx-label text="Номер тикета" />
+					<dx-label text="Номер тикета"></dx-label>
 				</dx-simple-item>
 				<dx-simple-item data-field="purpose">
-					<dx-label text="Назначение" />
+					<dx-label text="Назначение"></dx-label>
 				</dx-simple-item>
 			</dx-group-item>
 			<dx-group-item caption="Товары">
