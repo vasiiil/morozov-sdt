@@ -36,7 +36,6 @@ const elementAttr = {
 	...(_elementAttr ?? {}),
 	class: classes.join(' '),
 };
-console.log({ classes, _elementAttr, elementAttr });
 const borderRadius = getHTMLSize(_borderRadius, '4px');
 </script>
 
