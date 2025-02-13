@@ -5,6 +5,14 @@
 		width="600px"
 		max-height="400px"
 	>
+		<dx-toolbar-item location="after">
+			<base-button
+				icon="download"
+				styling-mode="text"
+				hint="Скачать"
+				@click="onDownLoadClick"
+			></base-button>
+		</dx-toolbar-item>
 		<base-button
 			icon="chevronnext"
 			element-class="nav-button next"
@@ -38,7 +46,9 @@
 <script lang="ts" setup>
 import { computed, ref, useTemplateRef } from 'vue';
 import { DxPopup, DxMultiView } from 'devextreme-vue';
+import { DxToolbarItem } from 'devextreme-vue/popup';
 import { BaseButton } from '@/shared/ui';
+import downloadFile from '@/shared/lib/utils/download-file';
 
 const popupRef = useTemplateRef<InstanceType<typeof DxPopup>>('popup');
 const selectedIndex = ref(0);
@@ -65,6 +75,11 @@ function onPrevClick() {
 		return;
 	}
 	selectedIndex.value--;
+}
+function onDownLoadClick() {
+	const photo = photos.value[selectedIndex.value];
+	const href = `https://api-k2.zao-sdt.ru/431c125d28fbfa0e97d5f89a12ab3fb5/anomaly/33555/${photo}`;
+	downloadFile(href, photo);
 }
 </script>
 
