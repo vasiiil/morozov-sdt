@@ -8,7 +8,7 @@
 		shading-color="rgba(0,0,0,0.4)"
 	></dx-load-panel>
 	<component v-if="routerReady" :is="layout">
-		<router-view />
+		<router-view></router-view>
 	</component>
 </template>
 

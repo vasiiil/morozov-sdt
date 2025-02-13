@@ -5,7 +5,7 @@
 		display-expr="name"
 		value-expr="id"
 		:width="350"
-	/>
+	></dx-select-box>
 </template>
 
 <script setup lang="ts">

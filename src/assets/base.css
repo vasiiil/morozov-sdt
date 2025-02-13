@@ -28,6 +28,7 @@
 	/* --color-border: var(--vt-c-divider-light-2);
 	--color-border-hover: var(--vt-c-divider-light-1); */
   --color-border-focused: var(--sdt-c-orange);
+	--color-background-hover: var(--sdt-c-calestical-blue);
 
 	--color-heading: var(--sdt-c-primary);
 	--color-text: var(--sdt-c-primary);

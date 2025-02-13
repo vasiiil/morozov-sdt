@@ -58,29 +58,6 @@ $button-hover-color: var(--sdt-c-calestical-blue);
 				background-color: $row-checked-color;
 				color: var(--sdt-c-white);
 			}
-			.dx-button {
-				&.dx-button-mode-outlined {
-					color: $text-color;
-					border-color: rgba(9, 35, 58, 0.3);
-					:hover {
-						color: $button-hover-color;
-					}
-				}
-			}
-			&.dx-state-hover {
-				&:not(.dx-selection):not(.dx-row-inserted):not(.dx-row-removed):not(
-						.dx-edit-row
-					):not(.dx-row-focused) {
-					> td {
-						.dx-button {
-							&.dx-button-mode-outlined {
-								color: var(--sdt-c-white);
-								border-color: var(--sdt-c-white);
-							}
-						}
-					}
-				}
-			}
 		}
 	}
 

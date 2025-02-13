@@ -6,25 +6,29 @@
 				icon="add"
 				styling-mode="text"
 				icon-circle-border
-			/>
+				:border-radius="0"
+			></base-button>
 			<base-button
 				text="Импорт"
 				icon="arrowdown"
 				styling-mode="text"
 				icon-circle-border
-			/>
+				:border-radius="0"
+			></base-button>
 			<base-button
 				text="Экспорт"
 				icon="arrowup"
 				styling-mode="text"
 				icon-circle-border
-			/>
+				:border-radius="0"
+			></base-button>
 			<base-button
 				text="Отмена"
 				icon="close"
 				styling-mode="text"
 				icon-circle-border
-			/>
+				:border-radius="0"
+			></base-button>
 		</div>
 		<div class="page-data-table">
 			<data-grid @edit-click="onEditClick"></data-grid>

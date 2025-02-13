@@ -5,16 +5,16 @@
 			:class="{ opened: menuOpened }"
 		>
 			<base-button
-				:element-attr="{ class: 'toggle-menu-button' }"
+				element-class="toggle-menu-button"
 				:icon="menuOpened ? 'chevronleft' : 'chevronright'"
 				@click="onToggleMenuClick"
-			/>
+			></base-button>
 			<dx-scroll-view height="100%">
 				<menu-compoenent
 					:menu-opened="menuOpened"
 					@open-menu="openMenu"
 					ref="menu-component"
-				/>
+				></menu-compoenent>
 			</dx-scroll-view>
 		</div>
 		<div class="layout-page">
@@ -37,7 +37,7 @@
 						<dx-select-box
 							:items="companies"
 							:value="companies[0]"
-						/>
+						></dx-select-box>
 					</div>
 					<div class="logout-button">
 						<base-button
@@ -45,7 +45,7 @@
 							icon="login"
 							styling-mode="outlined"
 							@click="onLogoutClick"
-						/>
+						></base-button>
 					</div>
 				</div>
 			</div>

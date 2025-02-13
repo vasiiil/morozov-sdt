@@ -12,7 +12,7 @@
 		select-all-mode="allPages"
 		apply-value-mode="useButtons"
 		ref="tagBox"
-	/>
+	></dx-tag-box>
 </template>
 
 <script setup lang="ts">
