@@ -39,7 +39,7 @@
 						active:
 							route.name !== 'underConstruction' &&
 							(menuItemsPathNames.get(data.id)?.has(route.name as string) ||
-								route.name === data.pathName),
+								(!!data.pathName && route.name === data.pathName)),
 					}"
 				>
 					<component
@@ -48,7 +48,7 @@
 						:active="
 							(route.name !== 'underConstruction' &&
 								(menuItemsPathNames.get(data.id)?.has(route.name as string) ||
-									route.name === data.pathName)) ||
+									(!!data.pathName && route.name === data.pathName))) ||
 							hoveredMenuTitle === data.id
 						"
 					></component>
@@ -132,10 +132,10 @@ const route = useRoute();
 
 const menuItems: IMenu[] = [
 	{
-		id: 'home',
+		id: 'dashboard',
 		icon: defineAsyncComponent(() => import('./icons/DashboardIcon.vue')),
 		text: 'Dashboard',
-		pathName: 'underConstruction',
+		pathName: 'dashboard',
 	},
 	{
 		id: 'orders',

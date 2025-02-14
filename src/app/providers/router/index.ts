@@ -41,6 +41,18 @@ const _router = createRouter({
 				title: 'SDT Anomaly Zones',
 			},
 		},
+		{
+			path: '/dashboard',
+			name: 'dashboard',
+			component: () => import('@/pages/dashboard'),
+			meta: {
+				title: 'SDT Dashboard',
+			},
+		},
+		{
+			path: '',
+			redirect: '/dashboard',
+		},
 	],
 });
 // eslint-disable-next-line @typescript-eslint/no-unused-vars

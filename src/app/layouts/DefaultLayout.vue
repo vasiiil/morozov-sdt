@@ -25,10 +25,12 @@
 			<div class="layout-page-header max-content-width">
 				<div class="layout-page-header-section start">
 					<div class="logo">
-						<img
-							src="/static/HeaderLogo.svg"
-							alt="Логотип"
-						/>
+						<router-link :to="{ name: 'dashboard' }">
+							<img
+								src="/static/HeaderLogo.svg"
+								alt="Логотип"
+							/>
+						</router-link>
 					</div>
 					<div class="support texts">
 						<div class="text">Поддержка</div>
@@ -149,7 +151,7 @@ $gap: 30px;
 			margin-bottom: $gap;
 
 			.logo {
-				> img {
+				> a > img {
 					height: 100%;
 				}
 			}
