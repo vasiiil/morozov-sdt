@@ -26,6 +26,9 @@ _instance.interceptors.response.use(
 		if (response.data.success) {
 			return Promise.resolve(response);
 		}
+		if (response.config.responseType === 'blob') {
+			return Promise.resolve(response);
+		}
 		if (response.data.comment) {
 			showError(response.data.comment);
 		}
