@@ -60,6 +60,7 @@
 				<div class="products-data-grid">
 					<card-products-data-grid
 						:items="productItems"
+						:anomaly-id="id"
 						ref="productDataGrid"
 					></card-products-data-grid>
 				</div>
@@ -96,6 +97,7 @@ const productsRef =
 		'productDataGrid',
 	);
 
+const id = ref<IListItem['anomaly_id'] | null>(null);
 const form = ref<IItem>();
 const {
 	array: productItems,
@@ -103,10 +105,11 @@ const {
 	refresh: refreshProductItems,
 } = useReactiveArray<ICardProductListItem>();
 
-async function show(id: IListItem['anomaly_id']) {
+async function show(_id: IListItem['anomaly_id']) {
+	id.value = _id;
 	resetProductItems();
 	startLoading();
-	const item = await api.getItem(id);
+	const item = await api.getItem(_id);
 	stopLoading();
 	if (!item) {
 		return;

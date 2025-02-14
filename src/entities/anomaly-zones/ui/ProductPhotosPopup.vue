@@ -2,8 +2,8 @@
 	<dx-popup
 		ref="popup"
 		:title="title"
-		width="600px"
-		max-height="400px"
+		width="1000px"
+		height="681px"
 	>
 		<dx-toolbar-item location="after">
 			<base-button
@@ -26,7 +26,7 @@
 			@click="onPrevClick"
 		></base-button>
 		<dx-multi-view
-			:height="300"
+			:height="600"
 			:data-source="photos"
 			v-model:selected-index="selectedIndex"
 			:loop="true"
@@ -35,7 +35,8 @@
 			<template #item="{ data: photo }">
 				<div class="photo-container">
 					<img
-						:src="`https://api-k2.zao-sdt.ru/431c125d28fbfa0e97d5f89a12ab3fb5/anomaly/33555/${photo}`"
+						:src="getPhotoUrl(photo)"
+						:alt="photo"
 					/>
 				</div>
 			</template>
@@ -49,15 +50,20 @@ import { DxPopup, DxMultiView } from 'devextreme-vue';
 import { DxToolbarItem } from 'devextreme-vue/popup';
 import { BaseButton } from '@/shared/ui';
 import downloadFile from '@/shared/lib/utils/download-file';
+import { API_TOKEN, HOST } from '@/shared/config';
+import type { IListItem } from '../config';
 
 const popupRef = useTemplateRef<InstanceType<typeof DxPopup>>('popup');
 const selectedIndex = ref(0);
 const photos = ref<string[]>([]);
+const id = ref<IListItem['anomaly_id'] | null>(null);
 const title = computed(
 	() => `Фото ${selectedIndex.value + 1} из ${photos.value.length}`,
 );
-function open(_photos: string[]) {
+function open(_id: IListItem['anomaly_id'], _photos: string[]) {
+	selectedIndex.value = 0;
 	photos.value = _photos;
+	id.value = _id;
 	popupRef.value.instance.show();
 }
 defineExpose({ open });
@@ -78,8 +84,10 @@ function onPrevClick() {
 }
 function onDownLoadClick() {
 	const photo = photos.value[selectedIndex.value];
-	const href = `https://api-k2.zao-sdt.ru/431c125d28fbfa0e97d5f89a12ab3fb5/anomaly/33555/${photo}`;
-	downloadFile(href, photo);
+	downloadFile(getPhotoUrl(photo, false), photo);
+}
+function getPhotoUrl(photo: string, full: boolean = true) {
+	return (full ? `${HOST}/${API_TOKEN}` : '') + `/anomaly/${id.value}/${photo}`;
 }
 </script>
 
@@ -98,6 +106,8 @@ function onDownLoadClick() {
 
 .photo-container {
 	display: flex;
+	width: 100%;
+	height: 100%;
 	justify-content: center;
 	align-items: center;
 	img {

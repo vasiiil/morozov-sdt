@@ -30,7 +30,7 @@
 			data-field="barcode"
 			data-type="string"
 			caption="Штрих-код"
-			:width="300"
+			:width="200"
 			:customize-text="barcodeCell"
 		></dx-column>
 		<dx-column
@@ -38,7 +38,14 @@
 			data-type="number"
 			caption="Кол-во"
 			:format="formatInteger"
+			:width="100"
+		></dx-column>
+		<dx-column
+			data-field="photos"
+			data-type="string"
+			caption="Фото"
 			:width="150"
+			cell-template="photo-cell"
 		></dx-column>
 		<dx-column
 			data-field="prod_name"
@@ -51,13 +58,6 @@
 			data-type="string"
 			caption="Комментарий"
 			:width="150"
-		></dx-column>
-		<dx-column
-			data-field="photos"
-			data-type="string"
-			caption="Фото"
-			:width="300"
-			cell-template="photo-cell"
 		></dx-column>
 
 		<template #photo-cell="{ data: { data } }">
@@ -87,34 +87,18 @@ import CustomStore from 'devextreme/data/custom_store';
 
 import { BaseButton } from '@/shared/ui';
 import { formatInteger } from '@/shared/lib/utils/formatters';
-import type { ICardProductListItem } from '../config';
+import type { ICardProductListItem, IListItem } from '../config';
 import ProductPhotosPopup from './ProductPhotosPopup.vue';
 
-const { items } = defineProps<{
+const { items, anomalyId } = defineProps<{
 	items: ICardProductListItem[];
+	anomalyId: IListItem['anomaly_id'] | null;
 }>();
 const dataGridRef = ref<InstanceType<typeof DxDataGrid>>();
 const store = new CustomStore({
 	key: 'item_id',
 	loadMode: 'raw',
-	load: () => {
-		return items.map((item) => {
-			if (item.item_id % 2) {
-				item.photos.push(
-					'JPEG_d8db65ba63e81f03_20250210_084920.jpg',
-					'JPEG_d8db65ba63e81f03_20250210_084926.jpg',
-					'JPEG_d8db65ba63e81f03_20250210_084802.jpg',
-				);
-			} else {
-				item.photos.push(
-					'JPEG_d8db65ba63e81f03_20250210_084810.jpg',
-					'JPEG_d8db65ba63e81f03_20250210_084842.jpg',
-					'JPEG_d8db65ba63e81f03_20250210_084849.jpg',
-				);
-			}
-			return item;
-		});
-	},
+	load: () => items,
 });
 function reloadDataSource() {
 	dataGridRef.value.instance.getDataSource().reload();
@@ -128,6 +112,9 @@ function barcodeCell(event: DxDataGridTypes.ColumnCustomizeTextArg) {
 const photosRef =
 	useTemplateRef<ComponentExposed<typeof ProductPhotosPopup>>('photos');
 function onPhotoButtonClick(item: ICardProductListItem) {
-	photosRef.value?.open(item.photos);
+	if (anomalyId === null) {
+		return;
+	}
+	photosRef.value?.open(anomalyId, item.photos);
 }
 </script>
