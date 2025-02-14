@@ -9,7 +9,11 @@
 				:icon="menuOpened ? 'chevronleft' : 'chevronright'"
 				@click="onToggleMenuClick"
 			></base-button>
-			<dx-scroll-view height="100%">
+			<dx-scroll-view
+				height="100%"
+				show-scrollbar="never"
+				:use-native="false"
+			>
 				<menu-compoenent
 					:menu-opened="menuOpened"
 					@open-menu="openMenu"
