@@ -1,4 +1,24 @@
 <template>
+	<template v-if="!menuOpened">
+		<template
+			v-for="data of menuItems"
+			:key="`#menu-title-${data.id}`"
+		>
+			<dx-tooltip
+				:target="`#menu-title-${data.id}`"
+				:wrapper-attr="{ class: 'menu-title-tooltip' }"
+				show-event="mouseenter"
+				hide-event="mouseleave"
+				:position="{
+					my: 'left',
+					at: 'left',
+					offset: { x: 47, y: 0 },
+				}"
+			>
+				{{ data.text }}
+			</dx-tooltip>
+		</template>
+	</template>
 	<dx-accordion
 		:items="menuItems"
 		:collapsible="true"
@@ -11,6 +31,7 @@
 			<div
 				@mouseenter="hoverMenuTitle(data.id)"
 				@mouseleave="unsetHeveredMenuTitle"
+				:id="`menu-title-${data.id}`"
 			>
 				<div
 					class="menu-title"
@@ -83,7 +104,7 @@
 <script lang="ts" setup>
 import { computed, defineAsyncComponent, onMounted, ref } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
-import { DxAccordion } from 'devextreme-vue';
+import { DxAccordion, DxTooltip } from 'devextreme-vue';
 import type { DxAccordionTypes } from 'devextreme-vue/accordion';
 
 interface IMenu {
@@ -223,8 +244,11 @@ defineExpose({ clearSelectedMenuItems });
 
 <style lang="scss" scoped>
 .dx-accordion {
-	.dx-accordion-item {
+	::v-deep(.dx-accordion-item) {
 		color: var(--sdt-c-white-50);
+		&:not(:last-child) {
+			margin-bottom: 4px;
+		}
 		& > .dx-accordion-item-title {
 			color: var(--sdt-c-white-50);
 			background-color: unset;
@@ -304,6 +328,22 @@ defineExpose({ clearSelectedMenuItems });
 				color: var(--sdt-c-white-10);
 				pointer-events: none;
 			}
+		}
+	}
+}
+</style>
+
+<style lang="scss">
+.menu-title-tooltip {
+	.dx-overlay-content {
+		&,
+		.dx-popover-arrow::after {
+			background-color: var(--sdt-c-calestical-blue);
+		}
+
+		.dx-popup-content {
+			color: var(--sdt-c-white);
+			padding: 10px 12px;
 		}
 	}
 }
