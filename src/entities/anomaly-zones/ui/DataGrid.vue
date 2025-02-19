@@ -21,14 +21,22 @@
 			display-mode="full"
 		></dx-pager>
 		<dx-scrolling mode="virtual"></dx-scrolling>
-		<dx-filter-row :visible="true" apply-filter="auto"></dx-filter-row>
+		<dx-filter-row
+			:visible="true"
+			apply-filter="auto"
+		></dx-filter-row>
 		<dx-selection mode="multiple"></dx-selection>
+		<DxStateStoring
+			:enabled="true"
+			type="localStorage"
+			storage-key="anomaly-zones-data-grid"
+		/>
 
 		<dx-column
 			data-field="anomaly_id"
 			data-type="number"
 			caption="Номер аномалии"
-			:width="150"
+			:width="100"
 			:filter-operations="[]"
 			cell-template="anomaly-id-cell"
 		></dx-column>
@@ -50,14 +58,14 @@
 			data-field="waybill_id"
 			data-type="string"
 			caption="Номер накладной"
-			:width="200"
+			:width="250"
 			:filter-operations="[]"
 		></dx-column>
 		<dx-column
 			data-field="task_id"
 			data-type="number"
 			caption="Номер тикета"
-			:width="200"
+			:width="100"
 			:filter-operations="[]"
 		></dx-column>
 		<dx-column
@@ -109,6 +117,7 @@ import {
 	DxPager,
 	DxScrolling,
 	DxSelection,
+	DxStateStoring,
 } from 'devextreme-vue/data-grid';
 
 import DataSource from 'devextreme/data/data_source';
