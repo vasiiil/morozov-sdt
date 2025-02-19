@@ -1,6 +1,7 @@
 import axios from 'axios';
 import { API_URL } from '../config';
 import { showError } from '../lib/utils/notifications';
+import { globalRouter } from '@/app/providers';
 
 const _instance = axios.create({
 	baseURL: API_URL,
@@ -22,9 +23,16 @@ _instance.interceptors.request.use(
 	},
 );
 _instance.interceptors.response.use(
-	(response) => {
+	async (response) => {
 		if (response.data.success) {
 			return Promise.resolve(response);
+		}
+		if (response.data.code === 440) {
+			await globalRouter.router?.push({
+				name: 'login',
+				query: { redirect: globalRouter.route?.fullPath },
+			});
+			return Promise.reject(response);
 		}
 		if (response.config.responseType === 'blob') {
 			return Promise.resolve(response);
