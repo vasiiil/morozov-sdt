@@ -10,6 +10,7 @@
 					placeholder="Логин"
 					:height="44"
 					:element-attr="{ class: 'login-textbox' }"
+					v-model="email"
 				></dx-text-box>
 			</div>
 			<div class="row">
@@ -17,6 +18,8 @@
 					placeholder="Пароль"
 					:height="44"
 					:element-attr="{ class: 'password-textbox' }"
+					mode="password"
+					v-model="password"
 				></dx-text-box>
 			</div>
 			<div class="row remember">
@@ -31,6 +34,7 @@
 					styling-mode="outlined"
 					width="100%"
 					height="45px"
+					@click="onLoginClick"
 				></base-button>
 			</div>
 		</div>
@@ -38,9 +42,24 @@
 </template>
 
 <script lang="ts" setup>
+import { ref } from 'vue';
+import { useRouter, useRoute } from 'vue-router';
 import { DxTextBox, DxCheckBox } from 'devextreme-vue';
 import LoginIcon from './icons/LoginIcon.vue';
 import { BaseButton } from '@/shared/ui';
+import { useUser } from '@/entities/user';
+
+const router = useRouter();
+const route = useRoute();
+const email = ref<string>(import.meta.env.VITE_LOGIN ?? '');
+const password = ref<string>(import.meta.env.VITE_PASSWORD ?? '');
+async function onLoginClick() {
+	const { login } = useUser();
+	try {
+		await login({ email: email.value, password: password.value });
+		router.push((route.query.redirect as string) ?? { name: 'dashboard' });
+	} catch {}
+}
 </script>
 
 <style lang="scss" scoped>
