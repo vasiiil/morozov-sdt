@@ -1,6 +1,7 @@
 export const isDev = getRequiredEnvVar('DEV');
 export const isProd = getRequiredEnvVar('PROD');
 
+export const isMaya = document.location.origin === 'wms-maya.ru';
 export const API_HOST = isDev
 	? getRequiredEnvVar('VITE_API_URL')
 	: '';

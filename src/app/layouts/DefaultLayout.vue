@@ -27,7 +27,7 @@
 					<div class="logo">
 						<router-link :to="{ name: 'dashboard' }">
 							<img
-								src="/static/HeaderLogo.svg"
+								:src="logoSrc"
 								alt="Логотип"
 							/>
 						</router-link>
@@ -75,9 +75,11 @@ import type { DxSelectBoxTypes } from 'devextreme-vue/select-box';
 
 import { useBoolean } from '@/shared/lib/use/base/useBoolean';
 import { BaseButton } from '@/shared/ui';
+import { isMaya } from '@/shared/config';
 import { useUser } from '@/entities/user';
 import MenuCompoenent from './menu';
 
+const logoSrc = isMaya ? '/static/MayaLogo.png' : '/static/HeaderLogo.svg';
 const profileSelectBox =
 	useTemplateRef<InstanceType<typeof DxSelectBox>>('profileSelectBox');
 const menuRef =
