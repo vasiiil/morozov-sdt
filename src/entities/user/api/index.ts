@@ -1,22 +1,25 @@
-// import { useApi } from '@/shared/api';
-import type { IUser } from '../model';
+import { useApi as _useApi } from '@/shared/api';
+import type { IAuthResponse } from '../config';
 
-// const API_URL = '/user';
-// const _api = useApi();
+export function useApi() {
+	const api = _useApi();
+	async function loadUser() {
+		return api.get<IAuthResponse>('/auth');
+	}
+	async function login(data: { email: string; password: string }) {
+		return await api.post<IAuthResponse>('/auth', data);
+	}
+	async function changeProfile(profileId: string) {
+		return api.post('/changeauth', { id: profileId });
+	}
+	async function logout() {
+		// await _api.post('/logout');
+	}
 
-async function loadUser(): Promise<IUser> {
-	// return _api.get(API_URL);
-	return new Promise((resolve) => {
-		setTimeout(() => {
-			resolve({ name: 'Nikitin Vasya' });
-		}, 3000);
-	});
+	return {
+		loadUser,
+		login,
+		logout,
+		changeProfile,
+	};
 }
-async function logout() {
-	// await _api.post('/logout');
-}
-
-export const api = {
-	loadUser,
-	logout,
-};
