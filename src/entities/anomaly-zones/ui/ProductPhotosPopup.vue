@@ -50,7 +50,7 @@ import { DxPopup, DxMultiView } from 'devextreme-vue';
 import { DxToolbarItem } from 'devextreme-vue/popup';
 import { BaseButton } from '@/shared/ui';
 import downloadFile from '@/shared/lib/utils/download-file';
-import { API_TOKEN, HOST } from '@/shared/config';
+import { API_HOST, API_URL } from '@/shared/config';
 import type { IListItem } from '../config';
 
 const popupRef = useTemplateRef<InstanceType<typeof DxPopup>>('popup');
@@ -87,7 +87,7 @@ function onDownLoadClick() {
 	downloadFile(getPhotoUrl(photo, false), photo);
 }
 function getPhotoUrl(photo: string, full: boolean = true) {
-	return (full ? `${HOST}/${API_TOKEN}` : '') + `/anomaly/${id.value}/${photo}`;
+	return (full ? `${API_HOST}${API_URL}` : '') + `/anomaly/${id.value}/${photo}`;
 }
 </script>
 
