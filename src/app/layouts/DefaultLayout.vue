@@ -39,10 +39,14 @@
 				</div>
 				<div class="layout-page-header-section end">
 					<div class="customer texts">
-						<div class="text name">Иванов И. И.</div>
+						<div class="text name">{{ user.user_name }}</div>
 						<dx-select-box
-							:items="companies"
-							:value="companies[0]"
+							:items="user.profiles"
+							v-model:value="user.active_profile"
+							display-expr="name"
+							value-expr="id"
+							ref="profileSelectBox"
+							@value-changed="onUserProfileChanged"
 						></dx-select-box>
 					</div>
 					<div class="logout-button">
@@ -64,17 +68,21 @@
 
 <script setup lang="ts">
 import { useTemplateRef } from 'vue';
+import { useRoute, useRouter } from 'vue-router';
 import type { ComponentExposed } from 'vue-component-type-helpers';
 import { DxSelectBox, DxScrollView } from 'devextreme-vue';
+import type { DxSelectBoxTypes } from 'devextreme-vue/select-box';
 
 import { useBoolean } from '@/shared/lib/use/base/useBoolean';
 import { BaseButton } from '@/shared/ui';
+import { useUser } from '@/entities/user';
 import MenuCompoenent from './menu';
 
+const profileSelectBox =
+	useTemplateRef<InstanceType<typeof DxSelectBox>>('profileSelectBox');
 const menuRef =
 	useTemplateRef<ComponentExposed<typeof MenuCompoenent>>('menu-component');
-function onLogoutClick() {}
-const companies = ['ООО "Рога"', 'ООО "Копыта"'];
+const { user } = useUser();
 
 const {
 	value: menuOpened,
@@ -85,6 +93,33 @@ function onToggleMenuClick() {
 	toggleMenu();
 	if (!menuOpened.value) {
 		menuRef.value?.clearSelectedMenuItems();
+	}
+}
+
+const router = useRouter();
+const route = useRoute();
+function onLogoutClick() {
+	const { logout } = useUser();
+	logout();
+	router.push({ name: 'login', query: { redirect: route.fullPath } });
+}
+
+async function onUserProfileChanged(event: DxSelectBoxTypes.ValueChangedEvent) {
+	// todo wait https://supportcenter.devexpress.com/ticket/details/t600848/selectbox-how-to-cancel-value-update
+	//@ts-expect-error see todo
+	if (event.component.__ignoreEvent) {
+		//@ts-expect-error see todo
+		event.component.__ignoreEvent = false;
+		user.active_profile = event.value;
+		return;
+	}
+
+	const { changeProfile } = useUser();
+	const result = await changeProfile(user.active_profile);
+	if (!result) {
+		//@ts-expect-error see todo
+		event.component.__ignoreEvent = true;
+		profileSelectBox.value.instance.reset(event.previousValue);
 	}
 }
 </script>
@@ -166,6 +201,9 @@ $gap: 30px;
 
 				.name {
 					font-size: 28px;
+					text-overflow: ellipsis;
+					white-space: nowrap;
+					overflow: hidden;
 				}
 			}
 
@@ -174,6 +212,9 @@ $gap: 30px;
 				gap: 20px;
 				&.start {
 					gap: 30px;
+				}
+				.customer {
+					width: 300px;
 				}
 
 				.logout-button {
