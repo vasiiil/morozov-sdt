@@ -51,7 +51,7 @@
 			data-field="prod_name"
 			data-type="string"
 			caption="Предполагаемое наименование"
-			:width="150"
+			:width="250"
 		></dx-column>
 		<dx-column
 			data-field="comment"
