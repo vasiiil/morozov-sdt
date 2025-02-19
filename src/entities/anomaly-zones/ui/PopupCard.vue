@@ -1,7 +1,7 @@
 <template>
 	<dx-popup
 		ref="popup"
-		title="Аномалия"
+		:title="`Аномалия ${id}`"
 		width="50vw"
 		height="70vh"
 	>
