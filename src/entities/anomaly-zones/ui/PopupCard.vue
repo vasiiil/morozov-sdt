@@ -5,15 +5,6 @@
 		width="50vw"
 		height="70vh"
 	>
-		<dx-toolbar-item
-			toolbar="bottom"
-			location="after"
-		>
-			<base-button
-				text="Сохранить"
-				styling-mode="outlined"
-			></base-button>
-		</dx-toolbar-item>
 		<dx-form
 			v-model:form-data="form"
 			:read-only="true"
@@ -72,7 +63,7 @@
 <script setup lang="ts">
 import { ref, useTemplateRef } from 'vue';
 import type { ComponentExposed } from 'vue-component-type-helpers';
-import { DxPopup, DxToolbarItem } from 'devextreme-vue/popup';
+import { DxPopup } from 'devextreme-vue/popup';
 import {
 	DxForm,
 	DxLabel,
@@ -81,7 +72,6 @@ import {
 	DxRequiredRule,
 } from 'devextreme-vue/form';
 
-import { BaseButton } from '@/shared/ui';
 import { useLoader } from '@/shared/lib/use/useLoader';
 import { useReactiveArray } from '@/shared/lib/use/base/useReactiveArray';
 import CardProductsDataGrid from './CardProductsDataGrid.vue';
