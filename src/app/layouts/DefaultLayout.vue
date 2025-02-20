@@ -42,7 +42,7 @@
 						<div class="text name">{{ user.user_name }}</div>
 						<dx-select-box
 							:items="user.profiles"
-							v-model:value="user.active_profile"
+							:value="user.active_profile"
 							display-expr="name"
 							value-expr="id"
 							ref="profileSelectBox"
@@ -112,12 +112,11 @@ async function onUserProfileChanged(event: DxSelectBoxTypes.ValueChangedEvent) {
 	if (event.component.__ignoreEvent) {
 		//@ts-expect-error see todo
 		event.component.__ignoreEvent = false;
-		user.active_profile = event.value;
 		return;
 	}
 
 	const { changeProfile } = useUser();
-	const result = await changeProfile(user.active_profile);
+	const result = await changeProfile(event.value);
 	if (!result) {
 		//@ts-expect-error see todo
 		event.component.__ignoreEvent = true;
