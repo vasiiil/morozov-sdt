@@ -1,4 +1,5 @@
-import { computed, ref, shallowReactive } from 'vue';
+import { computed, ref } from 'vue';
+import { showSuccess } from '@/shared/lib/utils/notifications';
 import { useLoader } from '@/shared/lib/use/useLoader';
 import { useApi } from '../api';
 import type { IUser, IProfile, IAuthResponse } from '../config';
@@ -7,15 +8,15 @@ function getDefaultUser(): IUser {
 	return {
 		user_name: '',
 		profiles: [],
-		active_profile: '',
+		active_profile: 0,
 	};
 }
 
-let user = shallowReactive<IUser>(getDefaultUser());
+const user = ref<IUser>(getDefaultUser());
 const authenticated = ref<boolean>(false);
 export function useUser() {
 	function _reset() {
-		user = getDefaultUser();
+		user.value = getDefaultUser();
 		authenticated.value = false;
 	}
 	function _prepareAuthResponse(response: IAuthResponse) {
@@ -23,14 +24,14 @@ export function useUser() {
 		for (const auth of response.auth) {
 			const id = Object.keys(auth)[0];
 			profiles.push({
-				id,
+				id: +id,
 				...auth[id],
 			});
 		}
-		user = {
-			user_name: profiles[0].name,
+		user.value = {
+			user_name: response.user_name,
 			profiles,
-			active_profile: profiles[0].id,
+			active_profile: response.active_profile,
 		};
 	}
 	async function _loadUser() {
@@ -63,10 +64,12 @@ export function useUser() {
 		_reset();
 	}
 
-	async function changeProfile(profileId: string) {
+	async function changeProfile(profileId: IProfile['id']) {
 		const { changeProfile } = useApi();
 		try {
 			await changeProfile(profileId);
+			user.value.active_profile = profileId;
+			showSuccess('Профиль сменен');
 			return true;
 		} catch {
 			return false;

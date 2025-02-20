@@ -1,12 +1,12 @@
 export interface IProfile {
-	id: string;
+	id: number;
 	name: string;
 	level_access: string;
 }
 export interface IUser {
 	user_name: string;
 	profiles: IProfile[];
-	active_profile: string;
+	active_profile: IProfile['id'];
 }
 export interface IAuthResponse {
 	user_name: string;
@@ -16,5 +16,5 @@ export interface IAuthResponse {
 			level_access: string;
 		};
 	}[];
-	active_profile: string;
+	active_profile: number;
 }
