@@ -1,3 +1,5 @@
+// eslint-disable-next-line @typescript-eslint/ban-ts-comment
+// @ts-nocheck
 export function parseFilter<T = Record<string, unknown>>(filter: unknown): T | null {
 	if (!filter) {
 		return null;

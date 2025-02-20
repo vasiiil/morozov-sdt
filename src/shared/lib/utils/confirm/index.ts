@@ -16,7 +16,8 @@ export function confirm(options: {
 	cancelText?: string;
 	cancelIcon?: string;
 }) {
-	const { promise, resolve } = Promise.withResolvers<boolean>();
-	component.value?.open(options, resolve);
+	const promise = new Promise<boolean>((resolve) => {
+		component.value?.open(options, resolve);
+	});
 	return promise;
 }
