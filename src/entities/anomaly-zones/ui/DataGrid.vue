@@ -12,6 +12,7 @@
 		width="100%"
 		height="100%"
 		ref="dataGridRef"
+		@context-menu-preparing="onContextMenuPreparing"
 	>
 		<dx-paging :page-size="50"></dx-paging>
 		<dx-pager
@@ -107,7 +108,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import {
 	DxDataGrid,
 	DxColumn,
@@ -118,6 +119,7 @@ import {
 	DxScrolling,
 	DxSelection,
 	DxStateStoring,
+	type DxDataGridTypes,
 } from 'devextreme-vue/data-grid';
 
 import DataSource from 'devextreme/data/data_source';
@@ -125,6 +127,7 @@ import CustomStore from 'devextreme/data/custom_store';
 
 import { parseFilter } from '@/shared/lib/utils/dx-data-source';
 import { anomalyStatusItems } from '@/entities/anomaly-statuses';
+import { useUser } from '@/entities/user';
 import { useApi } from '../api';
 import type { IListItem, TDxDataGridFilters } from '../config';
 
@@ -160,6 +163,28 @@ const statusLookupDataSource = {
 
 function onAnomalyIdClick(anomalyId: IListItem['anomaly_id']) {
 	emit('editClick', anomalyId);
+}
+const { user } = useUser();
+watch(
+	() => user.value.active_profile,
+	() => {
+		dataGridRef.value.instance.refresh();
+	},
+);
+
+function onContextMenuPreparing(
+	event: DxDataGridTypes.ContextMenuPreparingEvent,
+) {
+	if (!event.items) {
+		event.items = [];
+	}
+	event.items.push({
+		text: 'Удалить стейт',
+		icon: 'remove',
+		onItemClick: () => {
+			event.component.state(null);
+		},
+	});
 }
 </script>
 
