@@ -34,6 +34,19 @@ _instance.interceptors.response.use(
 			});
 			return Promise.reject(response);
 		}
+		if (response.config.url === '/auth') {
+			switch (response.data.code) {
+				case 400:
+					response.data.comment = 'Некорректные данные авторизации';
+					break;
+				case 401:
+					response.data.comment = 'Пользователь не активен';
+					break;
+				case 402:
+					response.data.comment = 'Нет данных о партнере';
+					break;
+			}
+		}
 		if (response.config.responseType === 'blob') {
 			return Promise.resolve(response);
 		}
