@@ -13,7 +13,7 @@ export function useApi() {
 		return api.post('/changeauth', { id: profileId });
 	}
 	async function logout() {
-		// await _api.post('/logout');
+		return await api.delete('/auth');
 	}
 
 	return {

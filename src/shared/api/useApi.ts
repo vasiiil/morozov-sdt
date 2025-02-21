@@ -10,19 +10,19 @@ interface IUseApi {
 	) => Promise<T>;
 	post: <T = unknown>(
 		url: string,
-		body: Record<string, unknown>,
+		body?: Record<string, unknown>,
 		params?: Record<string, unknown>,
 		config?: AxiosRequestConfig,
 	) => Promise<T>;
 	put: <T = unknown>(
 		url: string,
-		body: Record<string, unknown>,
+		body?: Record<string, unknown>,
 		params?: Record<string, unknown>,
 		config?: AxiosRequestConfig,
 	) => Promise<T>;
 	delete: <T = unknown>(
 		url: string,
-		body: Record<string, unknown>,
+		body?: Record<string, unknown>,
 		params?: Record<string, unknown>,
 		config?: AxiosRequestConfig,
 	) => Promise<T>;

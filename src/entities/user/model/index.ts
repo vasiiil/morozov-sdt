@@ -65,6 +65,9 @@ export function useUser() {
 	}
 
 	async function changeProfile(profileId: IProfile['id']) {
+		if (!isAuthenticated.value) {
+			return;
+		}
 		const { changeProfile } = useApi();
 		try {
 			await changeProfile(profileId);
