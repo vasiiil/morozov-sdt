@@ -27,11 +27,6 @@
 			:visible="true"
 			:search="{ enabled: true }"
 		></dx-header-filter>
-		<dx-export
-			:enabled="true"
-			:allow-export-selected-data="true"
-			:formats="['xlsx']"
-		></dx-export>
 
 		<dx-column type="buttons" :width="110">
 			<dx-button
@@ -156,7 +151,6 @@ import {
 	DxDataGrid,
 	DxButton,
 	DxColumn,
-	DxExport,
 	DxFilterRow,
 	DxHeaderFilter,
 	DxLookup,
