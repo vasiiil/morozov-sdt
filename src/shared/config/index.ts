@@ -1,10 +1,8 @@
 export const isDev = getRequiredEnvVar('DEV');
 export const isProd = getRequiredEnvVar('PROD');
 
-export const isMaya = getRequiredEnvVar('VITE_IS_MAYA') === '1';
-export const API_HOST = isDev
-	? getRequiredEnvVar('VITE_API_URL')
-	: '';
+export const isMaya = document.location.host === 'slimpick.test.b.wms-maya.ru';
+export const API_HOST = isDev ? getRequiredEnvVar('VITE_API_URL') : '';
 export const API_URL = `/api`;
 
 function getRequiredEnvVar(key: string) {

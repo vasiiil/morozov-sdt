@@ -34,6 +34,7 @@ import ruMessages from 'devextreme/localization/messages/ru.json';
 import { BaseConfirm } from '@/shared/ui';
 import { setComponent } from '@/shared/lib/utils/confirm';
 import { useLoader } from '@/shared/lib/use/useLoader';
+import { isMaya } from '@/shared/config';
 import { useUser } from '@/entities/user';
 
 import DefaultLayout from './layouts/DefaultLayout.vue';
@@ -71,6 +72,23 @@ onBeforeMount(async () => {
 });
 onMounted(async () => {
 	setComponent(confirmRef.value);
+
+	if (isMaya) {
+		const mayaFavicon = '/favicon-maya.ico';
+		let link =
+			document?.head.querySelector<HTMLLinkElement>(`link[rel*="icon"]`);
+		if (!link) {
+			link = document?.createElement('link');
+			if (link) {
+				link.rel = 'icon';
+				link.href = mayaFavicon;
+				link.type = `image/ico`;
+				document?.head.append(link);
+			}
+		} else {
+			link.href = mayaFavicon;
+		}
+	}
 });
 </script>
 
