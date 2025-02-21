@@ -22,7 +22,7 @@ const _router = createRouter({
 			name: 'underConstruction',
 			component: () => import('@/app/layouts/UnderConstruction.vue'),
 			meta: {
-				title: 'SDT',
+				title: 'Under Construction',
 			},
 		},
 		{
@@ -30,7 +30,7 @@ const _router = createRouter({
 			name: 'ordersPage',
 			component: () => import('@/pages/orders'),
 			meta: {
-				title: 'SDT Orders',
+				title: 'Просмотр заказов',
 			},
 		},
 		{
@@ -38,7 +38,7 @@ const _router = createRouter({
 			name: 'anomalyZonesPage',
 			component: () => import('@/pages/anomaly-zones'),
 			meta: {
-				title: 'SDT Anomaly Zones',
+				title: 'Аномалии',
 			},
 		},
 		{
@@ -46,7 +46,7 @@ const _router = createRouter({
 			name: 'dashboard',
 			component: () => import('@/pages/dashboard'),
 			meta: {
-				title: 'SDT Dashboard',
+				title: 'Dashboard',
 			},
 		},
 		{
