@@ -42,7 +42,9 @@ import { useTemplateRef } from 'vue';
 import type { ComponentExposed } from 'vue-component-type-helpers';
 import type { OrderTypes } from '@/entities/order';
 import { BaseButton } from '@/shared/ui';
-import { DataGrid, OrderCard } from './';
+
+import DataGrid from './DataGrid.vue';
+import OrderCard from './OrderCard.vue';
 
 const cardRef = useTemplateRef<ComponentExposed<typeof OrderCard>>('card');
 function onEditClick(orderId: OrderTypes.TOrderId) {
