@@ -33,6 +33,7 @@ export function useUser() {
 			profiles,
 			active_profile: response.active_profile,
 		};
+		authenticated.value = true;
 	}
 	async function _loadUser() {
 		try {
