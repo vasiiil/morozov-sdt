@@ -13,7 +13,7 @@ const _router = createRouter({
 			name: 'login',
 			component: () => import('@/pages/login'),
 			meta: {
-				title: 'SDT Login',
+				title: 'Логин',
 				layout: 'simple',
 			},
 		},
