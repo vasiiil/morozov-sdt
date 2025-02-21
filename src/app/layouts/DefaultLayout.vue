@@ -184,7 +184,6 @@ $gap: 30px;
 			display: flex;
 			justify-content: space-between;
 			border-bottom: 1px solid #476981;
-			margin-bottom: $gap;
 
 			.logo {
 				> a > img {
