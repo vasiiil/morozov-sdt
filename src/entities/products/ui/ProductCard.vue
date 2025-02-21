@@ -97,10 +97,10 @@ const emit = defineEmits<{
 const popupRef = useTemplateRef<InstanceType<typeof DxPopup>>('dxPopup');
 function show(_form?: TForm) {
 	form.value = _form ?? getDefaultForm();
-	popupRef.value.instance.show();
+	popupRef.value?.instance.show();
 }
 function hide() {
-	popupRef.value.instance.hide();
+	popupRef.value?.instance.hide();
 }
 defineExpose({ show });
 const form = ref<TForm>(getDefaultForm());
@@ -169,7 +169,7 @@ const formRef = useTemplateRef<InstanceType<typeof DxForm>>('dxForm');
 function onItemSelectionChanged(
 	event: DxAutocompleteTypes.SelectionChangedEvent,
 ) {
-	formRef.value.instance.updateData({
+	formRef.value?.instance.updateData({
 		item_id: event.selectedItem.item_id,
 		name: event.selectedItem.name,
 		cnt: event.selectedItem.cnt,

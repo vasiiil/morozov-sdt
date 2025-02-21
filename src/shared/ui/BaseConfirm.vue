@@ -71,13 +71,13 @@ function open(
 	cancelIcon.value = options.cancelIcon;
 
 	resolve.value = _resolve;
-	popupRef.value.instance.show();
+	popupRef.value?.instance.show();
 }
 async function onButtonClick(value: boolean) {
 	if (!resolve.value) {
 		return;
 	}
-	popupRef.value.instance.hide();
+	popupRef.value?.instance.hide();
 	await nextTick();
 	resolve.value(value);
 }

@@ -28,7 +28,7 @@ const tagBox = ref<InstanceType<typeof DxTagBox>>();
 onMounted(() => {
 	if (items.value.length === 0) {
 		store.loadList().then(() => {
-			tagBox.value.instance.repaint();
+			tagBox.value?.instance.repaint();
 		});
 	}
 });

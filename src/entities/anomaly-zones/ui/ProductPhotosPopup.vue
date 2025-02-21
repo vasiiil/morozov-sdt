@@ -64,7 +64,7 @@ function open(_id: IListItem['anomaly_id'], _photos: string[]) {
 	selectedIndex.value = 0;
 	photos.value = _photos;
 	id.value = _id;
-	popupRef.value.instance.show();
+	popupRef.value?.instance.show();
 }
 defineExpose({ open });
 

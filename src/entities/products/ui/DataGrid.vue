@@ -99,7 +99,7 @@ const store = new CustomStore({
 	load: () => items,
 });
 function reloadDataSource() {
-	dataGridRef.value.instance.getDataSource().reload();
+	dataGridRef.value?.instance.getDataSource().reload();
 }
 defineExpose({ reloadDataSource });
 

@@ -107,7 +107,7 @@ async function show(_id: IListItem['anomaly_id']) {
 	form.value = item;
 	refreshProductItems(item.items);
 	productsRef.value?.reloadDataSource();
-	popupRef.value.instance.show();
+	popupRef.value?.instance.show();
 }
 defineExpose({ show });
 

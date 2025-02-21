@@ -73,7 +73,7 @@ async function show(orderId?: OrderTypes.TOrderId) {
 		resetProductItems();
 	}
 	productsRef.value?.reloadDataSource();
-	popupRef.value.instance.show();
+	popupRef.value?.instance.show();
 }
 defineExpose({ show });
 </script>

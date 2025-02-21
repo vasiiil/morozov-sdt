@@ -120,7 +120,7 @@ async function onUserProfileChanged(event: DxSelectBoxTypes.ValueChangedEvent) {
 	if (!result) {
 		//@ts-expect-error see todo
 		event.component.__ignoreEvent = true;
-		profileSelectBox.value.instance.reset(event.previousValue);
+		profileSelectBox.value?.instance.reset(event.previousValue);
 	}
 }
 </script>

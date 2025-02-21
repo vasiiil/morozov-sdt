@@ -178,7 +178,7 @@ const { user } = useUser();
 watch(
 	() => user.value.active_profile,
 	() => {
-		dataGridRef.value.instance.refresh();
+		dataGridRef.value?.instance.refresh();
 	},
 );
 
