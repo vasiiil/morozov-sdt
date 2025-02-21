@@ -189,7 +189,7 @@ function onContextMenuPreparing(
 		event.items = [];
 	}
 	event.items.push({
-		text: 'Удалить стейт',
+		text: 'Отображение по умолчанию',
 		icon: 'remove',
 		onItemClick: () => {
 			event.component.state(null);
