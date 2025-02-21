@@ -10,6 +10,7 @@
 		height="auto"
 		max-height="320px"
 		ref="dataGridRef"
+		@exporting="onExporting"
 	>
 		<dx-paging :page-size="5"></dx-paging>
 		<dx-pager
@@ -19,6 +20,11 @@
 			:show-navigation-buttons="true"
 		></dx-pager>
 		<dx-scrolling mode="virtual"></dx-scrolling>
+		<dx-export
+			:enabled="true"
+			:allow-export-selected-data="true"
+			:formats="['xlsx']"
+		></dx-export>
 
 		<dx-column
 			data-field="item_id"
@@ -78,12 +84,16 @@ import type { ComponentExposed } from 'vue-component-type-helpers';
 import {
 	DxDataGrid,
 	DxColumn,
+	DxExport,
 	DxPaging,
 	DxPager,
 	DxScrolling,
 	type DxDataGridTypes,
 } from 'devextreme-vue/data-grid';
 import CustomStore from 'devextreme/data/custom_store';
+import { Workbook } from 'exceljs';
+import { saveAs } from 'file-saver';
+import { exportDataGrid } from 'devextreme/excel_exporter';
 
 import { BaseButton } from '@/shared/ui';
 import { formatInteger } from '@/shared/lib/utils/formatters';
@@ -101,7 +111,7 @@ const store = new CustomStore({
 	load: () => items,
 });
 function reloadDataSource() {
-	dataGridRef.value.instance.getDataSource().reload();
+	dataGridRef.value?.instance.getDataSource().reload();
 }
 defineExpose({ reloadDataSource });
 
@@ -116,5 +126,25 @@ function onPhotoButtonClick(item: ICardProductListItem) {
 		return;
 	}
 	photosRef.value?.open(anomalyId, item.photos);
+}
+
+function onExporting(event: DxDataGridTypes.ExportingEvent) {
+	const workbook = new Workbook();
+	const worksheet = workbook.addWorksheet('Sheet 1');
+
+	exportDataGrid({
+		component: event.component,
+		worksheet,
+		autoFilterEnabled: true,
+	}).then(() => {
+		workbook.xlsx.writeBuffer().then((buffer) => {
+			saveAs(
+				new Blob([buffer], { type: 'application/octet-stream' }),
+				`Anomaly_${anomalyId}_Products_${new Date().toLocaleDateString()}.xlsx`,
+			);
+		});
+	});
+
+	event.cancel = true;
 }
 </script>
