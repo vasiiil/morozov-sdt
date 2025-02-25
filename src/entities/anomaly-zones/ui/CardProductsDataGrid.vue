@@ -6,25 +6,30 @@
 		:allow-column-resizing="true"
 		:show-borders="true"
 		:column-min-width="50"
+		:element-attr="{ style: 'max-height: 490px;' }"
 		width="100%"
-		height="auto"
-		max-height="320px"
+		height="100%"
 		ref="dataGridRef"
 		@exporting="onExporting"
 	>
-		<dx-paging :page-size="5"></dx-paging>
+		<dx-paging :page-size="15"></dx-paging>
 		<dx-pager
 			:visible="true"
 			:display-mode="'full'"
-			:show-page-size-selector="true"
+			:show-info="true"
 			:show-navigation-buttons="true"
 		></dx-pager>
 		<dx-scrolling mode="virtual"></dx-scrolling>
 		<dx-export
 			:enabled="true"
-			:allow-export-selected-data="true"
 			:formats="['xlsx']"
 		></dx-export>
+		<dx-toolbar>
+			<dx-toolbar-item location="before">
+				<div class="dx-form-group-caption">Товары</div>
+			</dx-toolbar-item>
+			<dx-toolbar-item name="exportButton"></dx-toolbar-item>
+		</dx-toolbar>
 
 		<dx-column
 			data-field="item_id"
@@ -88,6 +93,8 @@ import {
 	DxPaging,
 	DxPager,
 	DxScrolling,
+	DxToolbar,
+	DxItem as DxToolbarItem,
 	type DxDataGridTypes,
 } from 'devextreme-vue/data-grid';
 import CustomStore from 'devextreme/data/custom_store';
