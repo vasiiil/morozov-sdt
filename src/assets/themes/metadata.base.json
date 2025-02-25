@@ -6,7 +6,7 @@
 		}
 	],
 	"baseTheme": "fluent.saas.light",
-	"assetsBasePath": "../../../node_modules/devextreme/dist/css",
+	"assetsBasePath": "../../../../node_modules/devextreme/dist/css",
 	"outputColorScheme": "base",
 	"base": true
 }
