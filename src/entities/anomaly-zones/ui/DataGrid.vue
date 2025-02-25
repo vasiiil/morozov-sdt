@@ -61,7 +61,7 @@
 		></dx-column>
 		<dx-column
 			data-field="date_create"
-			data-type="datetime"
+			data-type="date"
 			caption="Дата создания"
 			:width="180"
 			:allow-filtering="false"
@@ -95,7 +95,7 @@
 		</dx-column>
 		<dx-column
 			data-field="date_final_status"
-			data-type="datetime"
+			data-type="date"
 			caption="Дата статуса"
 			:width="150"
 			:allow-filtering="false"
