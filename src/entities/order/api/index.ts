@@ -1,7 +1,5 @@
 import { useApi as _useApi } from '@/shared/api';
-import { convertDate } from '@/shared/lib/utils/date';
 import type { OrderTypes } from '@/entities/order';
-import { useOrderStatusStore } from '@/entities/order-status';
 import type { ProductTypes } from '@/entities/products';
 
 type TListResponse = {
@@ -26,7 +24,6 @@ type TItemReturn = {
 
 export function useApi() {
 	const api = _useApi();
-	const { names: statusNames } = useOrderStatusStore();
 	async function getList(
 		filter: OrderTypes.TFilter,
 		offset: number,
@@ -44,14 +41,7 @@ export function useApi() {
 			});
 			return {
 				totalCount: response.params.total,
-				data: response.data.map((item) => ({
-					...item,
-					date_status: convertDate(item.date_status),
-					date_create: convertDate(item.date_create),
-					date_ship: convertDate(item.date_ship),
-					final_date: convertDate(item.final_date),
-					status_name: statusNames.get(item.status) ?? `${item.status}`,
-				})),
+				data: response.data,
 			};
 		} catch {
 			return {

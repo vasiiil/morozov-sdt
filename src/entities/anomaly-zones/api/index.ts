@@ -1,5 +1,5 @@
 import { useApi as _useApi } from '@/shared/api';
-import { convertDate, toDate } from '@/shared/lib/utils/date';
+import { toDate } from '@/shared/lib/utils/date';
 import type { IListItem, IItem, TFilter, IItemResponse } from '../config';
 type TListResponse = {
 	data: IListItem[];
@@ -32,11 +32,7 @@ export function useApi() {
 			});
 			return {
 				totalCount: response.params.total,
-				data: response.data.map((item) => ({
-					...item,
-					date_create: convertDate(item.date_create),
-					date_final_status: convertDate(item.date_final_status),
-				})),
+				data: response.data,
 			};
 		} catch {
 			return {

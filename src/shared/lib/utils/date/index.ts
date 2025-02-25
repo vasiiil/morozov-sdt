@@ -1,11 +1,13 @@
 import moment from '../moment';
+export const dateFormat = 'YYYY-MM-DD';
+export const dateTimeFormat = 'YYYY-MM-DD hh:mm:ss';
 export function isValidDate(value: unknown): value is Date {
 	return value instanceof Date && !isNaN(value.getTime());
 }
 export function toFormat<
 	TVavlue extends Date | null | undefined,
 	R = TVavlue extends Date ? string : null,
->(value: TVavlue, format = 'DD.MM.YYYY hh:mm:ss'): R {
+>(value: TVavlue, format = dateTimeFormat): R {
 	if (isValidDate(value)) {
 		return moment(value).format(format) as R;
 	}
@@ -14,7 +16,7 @@ export function toFormat<
 }
 export function toDate(
 	value: string | null | undefined,
-	format: string = 'DD.MM.YYYY hh:mm:ss',
+	format: string = dateTimeFormat,
 ): Date | null {
 	if (!value) {
 		return null;
