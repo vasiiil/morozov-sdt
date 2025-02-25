@@ -231,9 +231,10 @@ onMounted(() => {
 	}
 });
 function onMenuTitleClick(event: DxAccordionTypes.ItemTitleClickEvent<IMenu>) {
-	emit('open-menu');
 	if (event.itemData?.pathName) {
 		router.push({ name: event.itemData.pathName });
+	} else {
+		emit('open-menu');
 	}
 }
 function clearSelectedMenuItems() {
