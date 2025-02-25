@@ -2,7 +2,7 @@
 	<dx-popup
 		ref="popup"
 		:title="`Аномалия ${id}`"
-		width="50vw"
+		width="60vw"
 		height="70vh"
 	>
 		<dx-form
@@ -17,9 +17,6 @@
 			>
 				<dx-simple-item data-field="doc_id">
 					<dx-label text="Номер накладной внутренний"></dx-label>
-					<dx-required-rule
-						message="Номер накладной обязателен"
-					></dx-required-rule>
 				</dx-simple-item>
 				<dx-simple-item
 					data-field="date_create"
@@ -69,7 +66,6 @@ import {
 	DxLabel,
 	DxSimpleItem,
 	DxGroupItem,
-	DxRequiredRule,
 } from 'devextreme-vue/form';
 
 import { useLoader } from '@/shared/lib/use/useLoader';

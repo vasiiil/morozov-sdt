@@ -20,6 +20,7 @@
 			:visible="true"
 			:show-page-size-selector="true"
 			:show-navigation-buttons="true"
+			:show-info="true"
 			display-mode="full"
 		></dx-pager>
 		<dx-scrolling mode="virtual"></dx-scrolling>
@@ -27,7 +28,6 @@
 			:visible="true"
 			apply-filter="auto"
 		></dx-filter-row>
-		<dx-selection mode="multiple"></dx-selection>
 		<dx-state-storing
 			:enabled="true"
 			type="localStorage"
@@ -35,9 +35,14 @@
 		></dx-state-storing>
 		<dx-export
 			:enabled="true"
-			:allow-export-selected-data="true"
 			:formats="['xlsx']"
 		></dx-export>
+		<dx-toolbar>
+			<dx-toolbar-item location="before">
+				<h4 class="page-title">Аномалии</h4>
+			</dx-toolbar-item>
+			<dx-toolbar-item name="exportButton"></dx-toolbar-item>
+		</dx-toolbar>
 
 		<dx-column
 			data-field="anomaly_id"
@@ -124,8 +129,9 @@ import {
 	DxPaging,
 	DxPager,
 	DxScrolling,
-	DxSelection,
 	DxStateStoring,
+	DxToolbar,
+	DxItem as DxToolbarItem,
 	type DxDataGridTypes,
 } from 'devextreme-vue/data-grid';
 import { Workbook } from 'exceljs';

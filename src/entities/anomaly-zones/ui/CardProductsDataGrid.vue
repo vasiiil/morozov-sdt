@@ -30,13 +30,13 @@
 			data-field="item_id"
 			data-type="number"
 			caption="Артикул"
-			:width="150"
+			:width="100"
 		></dx-column>
 		<dx-column
 			data-field="barcode"
 			data-type="string"
 			caption="Штрих-код"
-			:width="200"
+			:width="150"
 			:customize-text="barcodeCell"
 		></dx-column>
 		<dx-column
@@ -44,13 +44,13 @@
 			data-type="number"
 			caption="Кол-во"
 			:format="formatInteger"
-			:width="100"
+			:width="80"
 		></dx-column>
 		<dx-column
 			data-field="photos"
 			data-type="string"
 			caption="Фото"
-			:width="150"
+			:width="50"
 			cell-template="photo-cell"
 		></dx-column>
 		<dx-column
@@ -69,7 +69,7 @@
 		<template #photo-cell="{ data: { data } }">
 			<base-button
 				styling-mode="outlined"
-				text="Посмотреть"
+				icon="image"
 				:visible="data.photos.length > 0"
 				@click="onPhotoButtonClick(data)"
 			></base-button>

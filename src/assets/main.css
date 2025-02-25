@@ -4,4 +4,9 @@
 #app {
 	width: 100vw;
 	height: 100vh;
+
+	h4.page-title {
+		color: var(--sdt-c-black);
+		text-transform: uppercase;
+	}
 }
