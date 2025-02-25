@@ -3,7 +3,7 @@
 		<div class="login-card">
 			<div class="row toolbar">
 				<login-icon></login-icon>
-				<span>Войти</span>
+				<span>{{ isMaya ? 'Maya' : 'SDT' }}</span>
 			</div>
 			<div class="row">
 				<dx-text-box
@@ -45,9 +45,10 @@
 import { ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
 import { DxTextBox, DxCheckBox } from 'devextreme-vue';
-import LoginIcon from './icons/LoginIcon.vue';
 import { BaseButton } from '@/shared/ui';
+import { isMaya } from '@/shared/config';
 import { useUser } from '@/entities/user';
+import LoginIcon from './icons/LoginIcon.vue';
 
 const router = useRouter();
 const route = useRoute();
