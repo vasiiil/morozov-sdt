@@ -32,10 +32,6 @@
 							/>
 						</router-link>
 					</div>
-					<div class="support texts">
-						<div class="text">Поддержка</div>
-						<div class="text">8 800 123 45 67</div>
-					</div>
 				</div>
 				<div class="layout-page-header-section end">
 					<div class="customer texts">
@@ -129,7 +125,6 @@ async function onUserProfileChanged(event: DxSelectBoxTypes.ValueChangedEvent) {
 $header-height: 90px;
 $menu-width: 100px;
 $menu-width-opened: 240px;
-$max-content-width: 1530px;
 $gap: 30px;
 .layout {
 	width: 100%;
@@ -174,7 +169,6 @@ $gap: 30px;
 
 		.max-content-width {
 			width: 100%;
-			max-width: $max-content-width;
 		}
 
 		&-header {
