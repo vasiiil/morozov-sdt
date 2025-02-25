@@ -166,7 +166,7 @@ import CustomStore from 'devextreme/data/custom_store';
 
 import { formatCurrency } from '@/shared/lib/utils/formatters';
 import { parseFilter } from '@/shared/lib/utils/dx-data-source';
-import { toFormat } from '@/shared/lib/utils/date';
+import { dateFormat, dateTimeFormat, toFormat } from '@/shared/lib/utils/date';
 
 import { useOrderStatusStore } from '@/entities/order-status';
 import { deliveryTypeItems } from '@/entities/delivery-types';
@@ -221,7 +221,7 @@ const dataSource = new DataSource<OrderTypes.IListItem, 'order_id'>({
 					} else {
 						const value = toFormat(
 							filterValue,
-							field === 'date_ship' ? 'DD.MM.YYYY' : 'DD.MM.YYYY hh:mm:ss',
+							field === 'date_ship' ? dateFormat : dateTimeFormat,
 						);
 						if (value) {
 							filter[field] = value;
