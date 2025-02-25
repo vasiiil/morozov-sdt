@@ -3,7 +3,8 @@
 		ref="popup"
 		:title="`Аномалия ${id}`"
 		width="60vw"
-		height="70vh"
+		height="auto"
+		max-height="80vh"
 	>
 		<dx-form
 			v-model:form-data="form"
@@ -43,15 +44,15 @@
 				<dx-simple-item data-field="purpose">
 					<dx-label text="Назначение"></dx-label>
 				</dx-simple-item>
-			</dx-group-item>
-			<dx-group-item caption="Товары">
-				<div class="products-data-grid">
-					<card-products-data-grid
-						:items="productItems"
-						:anomaly-id="id"
-						ref="productDataGrid"
-					></card-products-data-grid>
-				</div>
+				<dx-simple-item :col-span="2">
+					<div class="products-data-grid">
+						<card-products-data-grid
+							:items="productItems"
+							:anomaly-id="id"
+							ref="productDataGrid"
+						></card-products-data-grid>
+					</div>
+				</dx-simple-item>
 			</dx-group-item>
 		</dx-form>
 	</dx-popup>
