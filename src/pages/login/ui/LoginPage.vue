@@ -67,7 +67,7 @@ async function onLoginClick() {
 .page-container {
 	width: 100%;
 	height: 100%;
-	background-image: url(./icons/bg-image.png);
+	background: var(--sdt-c-calestical-blue-soft);
 	display: flex;
 	justify-content: center;
 	align-items: center;

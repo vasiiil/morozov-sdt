@@ -10,8 +10,8 @@ $button-hover-color: var(--sdt-c-calestical-blue);
 	color: $text-color;
 	.dx-datagrid-table {
 		border-collapse: separate;
-		border-spacing: 0 10px;
-		margin-top: -10px;
+		border-spacing: 0 2px;
+		margin-top: -2px;
 
 		.dx-header-row {
 			background-color: $row-main-color;
@@ -21,18 +21,28 @@ $button-hover-color: var(--sdt-c-calestical-blue);
 		}
 		.dx-datagrid-filter-row {
 			background-color: $row-alt-color;
+
+			&
+				> td:hover:not(.dx-command-select):not(.dx-command-expand):not(
+					.dx-editor-cell
+				):not(.dx-command-edit):not(.dx-datagrid-group-space) {
+				background-color: inherit;
+			}
 			.dx-editor-cell {
-				.dx-texteditor:not(.dx-tagbox) {
-					.dx-texteditor-input {
-						height: 32px;
-						line-height: 32px;
-						margin: 8px;
-						padding: 0;
-						border-bottom: 1px solid black;
-					}
-					&.dx-datebox {
+				& > div {
+					&.dx-editor-with-menu .dx-texteditor,
+					& .dx-texteditor.dx-datebox {
 						.dx-texteditor-input {
 							padding-left: 32px;
+						}
+					}
+					.dx-texteditor {
+						.dx-texteditor-input {
+							height: 32px;
+							line-height: 32px;
+							margin: 8px;
+							padding: 0;
+							border-bottom: 1px solid black;
 						}
 					}
 				}
@@ -46,17 +56,23 @@ $button-hover-color: var(--sdt-c-calestical-blue);
 				}
 			}
 
-			a,
-			a:hover {
+			a {
 				color: var(--sdt-c-blue);
+				text-decoration: none;
+				&:hover {
+					color: var(--sdt-c-blue);
+					text-decoration: underline;
+					cursor: pointer;
+				}
 			}
 
+			&.dx-state-hover > td,
 			&.dx-selection > td,
 			&.dx-selection:hover > td {
 				border-top: none !important;
 				border-bottom: none !important;
-				background-color: $row-checked-color;
-				color: var(--sdt-c-white);
+				background-color: $row-checked-color !important;
+				color: var(--sdt-c-white) !important;
 			}
 		}
 	}

@@ -3,12 +3,12 @@
 		:data-source="dataSource"
 		:allow-column-reordering="true"
 		:allow-column-resizing="true"
+		:hover-state-enabled="true"
 		:show-borders="true"
 		:column-min-width="50"
 		:sync-lookup-filter-values="false"
 		:remote-operations="{ paging: true, filtering: true }"
 		:show-row-lines="false"
-		:row-alternation-enabled="true"
 		width="100%"
 		height="100%"
 		ref="dataGridRef"
@@ -43,13 +43,14 @@
 			</dx-toolbar-item>
 			<dx-toolbar-item name="exportButton"></dx-toolbar-item>
 		</dx-toolbar>
+		<dx-sorting mode="none"></dx-sorting>
 
 		<dx-column
 			data-field="anomaly_id"
 			data-type="number"
 			caption="Номер аномалии"
 			:width="100"
-			:filter-operations="[]"
+			:filter-operations="['=']"
 			cell-template="anomaly-id-cell"
 		></dx-column>
 		<dx-column
@@ -57,7 +58,7 @@
 			data-type="number"
 			caption="Внутренний номер накладной"
 			:width="150"
-			:filter-operations="[]"
+			:filter-operations="['=']"
 		></dx-column>
 		<dx-column
 			data-field="date_create"
@@ -71,14 +72,15 @@
 			data-type="string"
 			caption="Номер накладной"
 			:width="250"
-			:filter-operations="[]"
+			:filter-operations="['=']"
 		></dx-column>
 		<dx-column
 			data-field="task_id"
 			data-type="number"
 			caption="Номер тикета"
 			:width="100"
-			:filter-operations="[]"
+			:filter-operations="['=']"
+			cell-template="task-id-cell"
 		></dx-column>
 		<dx-column
 			data-field="status"
@@ -109,11 +111,19 @@
 		></dx-column>
 
 		<template #anomaly-id-cell="{ data: { data } }">
+			<a @click.prevent="onAnomalyIdClick(data.anomaly_id)">
+				{{ data.anomaly_id }}
+			</a>
+		</template>
+		<template #task-id-cell="{ data: { data } }">
+			<template v-if="isMaya">{{ data.task_id }}</template>
 			<a
-				class="anomaly-id-cell"
-				@click.prevent="onAnomalyIdClick(data.anomaly_id)"
-				>{{ data.anomaly_id }}</a
+				v-else
+				:href="`https://helpdesk.zao-sdt.com/issues/${data.task_id}`"
+				target="_blank"
 			>
+				{{ data.task_id }}
+			</a>
 		</template>
 	</dx-data-grid>
 </template>
@@ -129,6 +139,7 @@ import {
 	DxPaging,
 	DxPager,
 	DxScrolling,
+	DxSorting,
 	DxStateStoring,
 	DxToolbar,
 	DxItem as DxToolbarItem,
@@ -141,6 +152,7 @@ import { exportDataGrid } from 'devextreme/excel_exporter';
 import DataSource from 'devextreme/data/data_source';
 import CustomStore from 'devextreme/data/custom_store';
 
+import { isMaya } from '@/shared/config';
 import { parseFilter } from '@/shared/lib/utils/dx-data-source';
 import { anomalyStatusItems } from '@/entities/anomaly-statuses';
 import { useUser } from '@/entities/user';
@@ -162,6 +174,9 @@ const dataSource = new DataSource<IListItem, 'anomaly_id'>({
 			loadOptions.skip ?? 0,
 			loadOptions.take ?? 100,
 		);
+		if (loadOptions.requireTotalCount) {
+			dataGridRef.value?.instance.pageIndex(0);
+		}
 		return {
 			...result,
 		};
@@ -223,11 +238,4 @@ function onExporting(event: DxDataGridTypes.ExportingEvent) {
 }
 </script>
 
-<style lang="scss" scoped>
-.anomaly-id-cell {
-	&:hover {
-		text-decoration: underline;
-		cursor: pointer;
-	}
-}
-</style>
+<style lang="scss" scoped></style>
