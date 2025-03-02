@@ -22,12 +22,7 @@
 					v-model="password"
 				></dx-text-box>
 			</div>
-			<div class="row remember">
-				<dx-check-box
-					:icon-size="20"
-					text="Не запоминать"
-				></dx-check-box>
-			</div>
+			<div class="row remember"></div>
 			<div class="row">
 				<base-button
 					text="Войти"
@@ -44,7 +39,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import { useRouter, useRoute } from 'vue-router';
-import { DxTextBox, DxCheckBox } from 'devextreme-vue';
+import { DxTextBox } from 'devextreme-vue';
 import { BaseButton } from '@/shared/ui';
 import { isMaya } from '@/shared/config';
 import { useUser } from '@/entities/user';
@@ -149,13 +144,6 @@ async function onLoginClick() {
 
 			&.remember {
 				height: 22px;
-				display: flex;
-				justify-content: center;
-
-				.dx-checkbox {
-					height: 22px;
-					font-size: 18px;
-				}
 			}
 
 			::v-deep(.dx-button-text) {
