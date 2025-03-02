@@ -171,8 +171,10 @@ const dataSource = new DataSource<IListItem, 'anomaly_id'>({
 		const filter = parseFilter<TDxDataGridFilters>(loadOptions.filter) ?? {};
 		const result = await api.getList(
 			filter ?? {},
-			loadOptions.skip ?? 0,
-			loadOptions.take ?? 100,
+			// @ts-expect-error typeof loadOptions = { isLoadingAll:  boolean }
+			loadOptions.isLoadingAll ? 0 : (loadOptions.skip ?? 0),
+			// @ts-expect-error typeof loadOptions = { isLoadingAll:  boolean }
+			loadOptions.isLoadingAll ? 0 : (loadOptions.take ?? 100),
 		);
 		if (loadOptions.requireTotalCount) {
 			dataGridRef.value?.instance.pageIndex(0);
