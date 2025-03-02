@@ -81,6 +81,9 @@ $button-hover-color: var(--sdt-c-calestical-blue);
 
 	&-pager {
 		padding-top: 30px;
+		display: flex;
+		flex-wrap: wrap;
+		gap: 15px;
 		.dx-pages {
 			display: flex;
 			gap: 8px;
