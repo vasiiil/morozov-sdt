@@ -1,9 +1,9 @@
 <template>
-	<div class="layout">
-		<div
-			class="layout-menu"
-			:class="{ opened: menuOpened }"
-		>
+	<div
+		class="layout"
+		:class="{ 'menu-opened': menuOpened }"
+	>
+		<div class="layout-menu">
 			<base-button
 				element-class="toggle-menu-button"
 				:icon="menuOpened ? 'chevronleft' : 'chevronright'"
@@ -123,23 +123,21 @@ async function onUserProfileChanged(event: DxSelectBoxTypes.ValueChangedEvent) {
 
 <style lang="scss" scoped>
 $header-height: 90px;
-$menu-width: 100px;
-$menu-width-opened: 240px;
 $gap: 30px;
 .layout {
 	width: 100%;
 	height: 100%;
 	display: flex;
+	--menu-width: 100px;
+	&.menu-opened {
+		--menu-width: 240px;
+	}
 
 	&-menu {
-		width: $menu-width;
+		width: var(--menu-width);
 		background-color: var(--sdt-c-primary);
 		padding: 140px 25px 25px 25px;
 		position: relative;
-
-		&.opened {
-			width: $menu-width-opened;
-		}
 
 		::v-deep(.toggle-menu-button) {
 			background-color: var(--sdt-c-primary);
@@ -161,7 +159,7 @@ $gap: 30px;
 	}
 
 	&-page {
-		width: calc(100% - $menu-width);
+		width: calc(100% - var(--menu-width));
 		padding: 0 30px;
 		display: flex;
 		flex-direction: column;
