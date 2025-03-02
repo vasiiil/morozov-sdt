@@ -50,6 +50,14 @@ const _router = createRouter({
 			},
 		},
 		{
+			path: '/waybills',
+			name: 'waybillsPage',
+			component: () => import('@/pages/waybills'),
+			meta: {
+				title: 'Поставки',
+			},
+		},
+		{
 			path: '',
 			redirect: '/dashboard',
 		},

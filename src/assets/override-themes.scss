@@ -66,11 +66,13 @@ $button-hover-color: var(--sdt-c-calestical-blue);
 				}
 			}
 
+			& > td {
+				border-top: none !important;
+				border-bottom: none !important;
+			}
 			&.dx-state-hover > td,
 			&.dx-selection > td,
 			&.dx-selection:hover > td {
-				border-top: none !important;
-				border-bottom: none !important;
 				background-color: $row-checked-color !important;
 				color: var(--sdt-c-white) !important;
 			}
