@@ -164,7 +164,7 @@ const menuItems: IMenu[] = [
 			},
 			{
 				text: 'Поставщики',
-				pathName: 'underConstruction',
+				pathName: 'suppliersPage',
 			},
 			{
 				text: 'Управление отгрузками',

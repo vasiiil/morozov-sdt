@@ -58,6 +58,14 @@ const _router = createRouter({
 			},
 		},
 		{
+			path: '/suppliers',
+			name: 'suppliersPage',
+			component: () => import('@/pages/suppliers'),
+			meta: {
+				title: 'Поставщики',
+			},
+		},
+		{
 			path: '',
 			redirect: '/dashboard',
 		},

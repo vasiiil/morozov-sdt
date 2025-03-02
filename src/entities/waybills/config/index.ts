@@ -33,7 +33,7 @@ export const statuses = {
 export type TStatus = TObjectKeys<typeof statuses>;
 
 export interface IListItem {
-	doc_id: string;
+	doc_id: number;
 	id: string;
 	date_create: string;
 	date_status: string;
