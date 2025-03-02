@@ -13,7 +13,7 @@ import { DataGrid, type IListItem } from '@/entities/waybills';
 // import OrderCard from './OrderCard.vue';
 
 // const cardRef = useTemplateRef<ComponentExposed<typeof OrderCard>>('card');
-function onEditClick(docId: IListItem['id']) {
+function onEditClick(docId: IListItem['doc_id']) {
 	console.log('wqqeqwe', docId);
 	// cardRef.value?.show(orderId);
 }
