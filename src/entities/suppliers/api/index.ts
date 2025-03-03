@@ -21,7 +21,10 @@ export function useApi() {
 			});
 			return {
 				totalCount: response.params.total,
-				data: response.data,
+				data: response.data.map((item) => ({
+					...item,
+					print_torg2: !!item.print_torg2,
+				})),
 			};
 		} catch {
 			return {
@@ -43,10 +46,8 @@ export function useApi() {
 	async function createItem(
 		body: Record<string, string | number>,
 	): Promise<IListItem['supplier_id']> {
-		const {
-			data: { supplier_id },
-		} = await api.put<{
-			data: { supplier_id: IListItem['supplier_id'] };
+		const { supplier_id } = await api.put<{
+			supplier_id: IListItem['supplier_id'];
 		}>('/supplier', body);
 		return supplier_id;
 	}
