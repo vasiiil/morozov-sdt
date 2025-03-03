@@ -1,3 +1,5 @@
+import { generatePassword } from '@/shared/lib/utils/generate';
+
 export interface IListItem {
 	supplier_id: number;
 	name: string;
@@ -9,8 +11,7 @@ export interface IListItem {
 	send_emails: string;
 }
 
-export interface IItem
-	extends Omit<IListItem, 'supplier_id' | 'send_emails'> {
+export interface IItem extends Omit<IListItem, 'supplier_id' | 'send_emails'> {
 	send_emails: string[];
 }
 
@@ -19,7 +20,7 @@ export function getDefaultForm(): IItem {
 		name: '',
 		email: '',
 		inn: '',
-		password: '',
+		password: generatePassword(),
 		doc_supplier: '',
 		print_torg2: true,
 		send_emails: [],
