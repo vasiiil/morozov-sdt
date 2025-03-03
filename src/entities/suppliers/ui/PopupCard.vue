@@ -5,6 +5,7 @@
 		width="60vw"
 		height="auto"
 		max-height="80vh"
+		@hidden="onHidden"
 	>
 		<dx-toolbar-item
 			toolbar="bottom"
@@ -20,8 +21,10 @@
 		></dx-toolbar-item>
 		<dx-form
 			v-model:form-data="form"
+			:show-validation-summary="true"
 			label-mode="outside"
 			label-location="top"
+			ref="dxForm"
 		>
 			<dx-group-item
 				caption="Основная информация"
@@ -29,21 +32,46 @@
 			>
 				<dx-simple-item data-field="name">
 					<dx-label text="Наименование"></dx-label>
+					<dx-required-rule
+						message="Наименование обязательно"
+					></dx-required-rule>
 				</dx-simple-item>
 				<dx-simple-item data-field="doc_supplier">
 					<dx-label text="Наименование на документах"></dx-label>
+					<dx-required-rule
+						message="Наименование на документах обязательно"
+					></dx-required-rule>
 				</dx-simple-item>
-				<dx-simple-item data-field="inn">
+				<dx-simple-item
+					data-field="inn"
+					editor-type="dxTextBox"
+				>
 					<dx-label text="ИНН"></dx-label>
+					<dx-required-rule message="ИНН обязателен"></dx-required-rule>
+					<dx-string-length-rule
+						:min="10"
+						:max="12"
+						message="ИНН должен быть от 10 до 12 символов"
+					></dx-string-length-rule>
+					<dx-pattern-rule
+						pattern="(\d){10,12}"
+						message="ИНН может содержать только цифры"
+					></dx-pattern-rule>
 				</dx-simple-item>
-				<dx-simple-item data-field="email">
+				<dx-simple-item
+					data-field="email"
+					:editor-options="emailEditorOptions"
+				>
 					<dx-label text="E-mail"></dx-label>
+					<dx-required-rule message="E-mail обязателен"></dx-required-rule>
+					<dx-email-rule></dx-email-rule>
 				</dx-simple-item>
 				<dx-simple-item
 					data-field="password"
 					:editor-options="passwordEditorOptions"
 				>
 					<dx-label text="Пароль"></dx-label>
+					<dx-required-rule message="Пароль обязателен"></dx-required-rule>
 				</dx-simple-item>
 				<dx-simple-item
 					data-field="print_torg2"
@@ -62,6 +90,7 @@
 					:editor-options="emailOptions"
 				>
 					<dx-label :text="`Доп. email ${index + 1}`"></dx-label>
+					<dx-email-rule></dx-email-rule>
 				</dx-simple-item>
 				<dx-button-item
 					:button-options="addSendEmailButtonOptions"
@@ -81,23 +110,41 @@ import {
 	DxSimpleItem,
 	DxGroupItem,
 	DxButtonItem,
+	DxEmailRule,
+	DxPatternRule,
+	DxRequiredRule,
+	DxStringLengthRule,
 } from 'devextreme-vue/form';
 import type { DxTextBoxTypes } from 'devextreme-vue/cjs/text-box';
 
 import { useLoader } from '@/shared/lib/use/useLoader';
+import { useBoolean } from '@/shared/lib/use/base/useBoolean';
 import { showSuccess } from '@/shared/lib/utils/notifications';
 import { useModel } from '../model';
 import { getDefaultForm, type IItem, type IListItem } from '../config';
 
+const emit = defineEmits<{
+	(event: 'hidden', afterSave: boolean): void;
+}>();
 const { startLoading, stopLoading } = useLoader();
 const { getItem, saveItem } = useModel();
 const popupRef = useTemplateRef<InstanceType<typeof DxPopup>>('popup');
+const formRef = useTemplateRef<InstanceType<typeof DxForm>>('dxForm');
 
+const {
+	value: saved,
+	setTrue: setSaved,
+	setFalse: clearSaved,
+} = useBoolean(false);
 const id = ref<IListItem['supplier_id'] | undefined>();
 const form = ref<IItem>(getDefaultForm());
 
 async function show(_id?: IListItem['supplier_id']) {
 	id.value = _id;
+	formRef.value?.instance.reset();
+	clearSaved();
+	hidePassword();
+	showHidePassword();
 	if (_id === undefined) {
 		form.value = getDefaultForm();
 		popupRef.value?.instance.show();
@@ -114,11 +161,50 @@ async function show(_id?: IListItem['supplier_id']) {
 }
 defineExpose({ show });
 
+const {
+	value: passwordShown,
+	toggle: togglePassword,
+	setFalse: hidePassword,
+} = useBoolean(false);
 const passwordEditorOptions: DxTextBoxTypes.Properties = {
 	mode: 'password',
-	readOnly: true,
+	buttons: [
+		{
+			location: 'after',
+			name: 'showHidePasswordButton',
+			options: {
+				icon: 'eyeopen',
+				stylingMode: 'text',
+				onClick: () => {
+					togglePassword();
+					showHidePassword();
+				},
+			},
+		},
+	],
 };
+function showHidePassword() {
+	const editor = formRef.value?.instance.getEditor('password');
+	if (!editor) {
+		togglePassword();
+		return;
+	}
+	if (passwordShown.value) {
+		editor.option('mode', 'text');
+		editor
+			// @ts-expect-error typeof editor = DxTextBox
+			.getButton('showHidePasswordButton')
+			.option('icon', 'eyeclose');
+	} else {
+		editor.option('mode', 'password');
+		editor
+			// @ts-expect-error typeof editor = DxTextBox
+			.getButton('showHidePasswordButton')
+			.option('icon', 'eyeopen');
+	}
+}
 
+const emailEditorOptions = { mode: 'email' };
 const sendEmailsOptions = ref(getSendEmailsOptions(form.value.send_emails));
 const addSendEmailButtonOptions = {
 	icon: 'add',
@@ -138,6 +224,7 @@ function getSendEmailsOptions(emails: string[]) {
 }
 function generateNewEmailOptions(index: number) {
 	return {
+		mode: 'email',
 		buttons: [
 			{
 				name: 'trash',
@@ -160,17 +247,25 @@ function generateNewEmailOptions(index: number) {
 function close() {
 	popupRef.value?.instance.hide();
 }
+function onHidden() {
+	emit('hidden', saved.value);
+}
 const cancelButtonOptions = {
 	text: 'Отменить',
 	stylingMode: 'outlined',
 	onClick: () => {
 		close();
 	},
-}
+};
 const saveButtonOptions = {
 	text: 'Сохранить',
 	stylingMode: 'outlined',
 	onClick: async () => {
+		const validation = formRef.value?.instance.validate();
+		if (!validation?.isValid) {
+			return;
+		}
+
 		const body = {
 			...form.value,
 			print_torg2: form.value.print_torg2 ? 1 : 0,
@@ -178,11 +273,12 @@ const saveButtonOptions = {
 		};
 		const result = await saveItem(body, id.value);
 		if (result) {
+			setSaved();
 			id.value = result;
 			showSuccess('Сохранено');
 		}
 	},
-}
+};
 </script>
 
 <style lang="scss" scoped></style>
