@@ -21,6 +21,7 @@
 			:show-navigation-buttons="true"
 		></dx-pager>
 		<dx-scrolling mode="virtual"></dx-scrolling>
+		<dx-sorting mode="none"></dx-sorting>
 		<dx-toolbar>
 			<dx-toolbar-item
 				location="after"
@@ -64,6 +65,7 @@
 			data-field="send_emails"
 			data-type="string"
 			caption="Доп. email"
+			cell-template="send-emails-cell"
 			:width="150"
 		></dx-column>
 		<dx-column
@@ -78,6 +80,16 @@
 				{{ data.supplier_id }}
 			</a>
 		</template>
+		<template #send-emails-cell="{ data: { data } }">
+			<template v-if="data.send_emails">
+				<div
+					v-for="(email, index) of data.send_emails.split(',')"
+					:key="`supplier-${data.supplier_id}-send-email-${index}`"
+				>
+					{{ email }}
+				</div>
+			</template>
+		</template>
 	</dx-data-grid>
 </template>
 
@@ -89,6 +101,7 @@ import {
 	DxPaging,
 	DxPager,
 	DxScrolling,
+	DxSorting,
 	DxToolbar,
 	DxItem as DxToolbarItem,
 } from 'devextreme-vue/data-grid';
@@ -130,4 +143,9 @@ const addButtonOptions: DxButtonTypes.Properties = {
 		emit('addClick');
 	},
 };
+
+function reloadDataSource() {
+	dataGridRef.value?.instance.getDataSource().reload();
+}
+defineExpose({ reloadDataSource });
 </script>
