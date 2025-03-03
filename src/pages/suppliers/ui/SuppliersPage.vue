@@ -1,11 +1,13 @@
 <template>
 	<div class="page-container">
 		<data-grid
+			v-model:items="items"
 			ref="dataGridRef"
 			@edit-click="onEditClick"
 			@add-click="onAddClick"
 		></data-grid>
 		<popup-card
+			:items="items"
 			ref="card"
 			@hidden="onCardHidden"
 		></popup-card>
@@ -13,11 +15,12 @@
 </template>
 
 <script setup lang="ts">
-import { useTemplateRef } from 'vue';
+import { ref, useTemplateRef } from 'vue';
 import type { ComponentExposed } from 'vue-component-type-helpers';
 
 import { DataGrid, PopupCard, type IListItem } from '@/entities/suppliers';
 
+const items = ref<IListItem[]>([]);
 const cardRef = useTemplateRef<ComponentExposed<typeof PopupCard>>('card');
 const dataGridRef =
 	useTemplateRef<ComponentExposed<typeof DataGrid>>('dataGridRef');

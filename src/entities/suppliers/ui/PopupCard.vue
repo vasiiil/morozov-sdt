@@ -6,6 +6,7 @@
 		height="auto"
 		max-height="80vh"
 		@hidden="onHidden"
+		@showing="onShowing"
 	>
 		<dx-toolbar-item
 			toolbar="bottom"
@@ -42,10 +43,7 @@
 						message="Наименование на документах обязательно"
 					></dx-required-rule>
 				</dx-simple-item>
-				<dx-simple-item
-					data-field="inn"
-					editor-type="dxTextBox"
-				>
+				<dx-simple-item data-field="inn">
 					<dx-label text="ИНН"></dx-label>
 					<dx-required-rule message="ИНН обязателен"></dx-required-rule>
 					<dx-string-length-rule
@@ -78,7 +76,7 @@
 					editor-type="dxSwitch"
 				>
 					<dx-label
-						text="Использовать данные поставщика в документах торг-2"
+						text="Использовать данные поставщика в документах"
 					></dx-label>
 				</dx-simple-item>
 			</dx-group-item>
@@ -117,7 +115,6 @@ import {
 } from 'devextreme-vue/form';
 import type { DxTextBoxTypes } from 'devextreme-vue/cjs/text-box';
 
-import { useLoader } from '@/shared/lib/use/useLoader';
 import { useBoolean } from '@/shared/lib/use/base/useBoolean';
 import { showSuccess } from '@/shared/lib/utils/notifications';
 import { useModel } from '../model';
@@ -126,7 +123,9 @@ import { getDefaultForm, type IItem, type IListItem } from '../config';
 const emit = defineEmits<{
 	(event: 'hidden', afterSave: boolean): void;
 }>();
-const { startLoading, stopLoading } = useLoader();
+const { items } = defineProps<{
+	items: IListItem[];
+}>();
 const { getItem, saveItem } = useModel();
 const popupRef = useTemplateRef<InstanceType<typeof DxPopup>>('popup');
 const formRef = useTemplateRef<InstanceType<typeof DxForm>>('dxForm');
@@ -150,14 +149,18 @@ async function show(_id?: IListItem['supplier_id']) {
 		popupRef.value?.instance.show();
 		return;
 	}
-	startLoading();
-	const item = await getItem(_id);
-	stopLoading();
+	const item = getItem(items, _id);
 	if (!item) {
 		return;
 	}
 	form.value = item;
 	popupRef.value?.instance.show();
+}
+function onShowing() {
+	formRef.value?.instance.getEditor('email')?.option('readOnly', !!id.value);
+	formRef.value?.instance.getEditor('inn')?.option('readOnly', !!id.value);
+
+	sendEmailsOptions.value = getSendEmailsOptions(form.value.send_emails);
 }
 defineExpose({ show });
 
@@ -205,7 +208,7 @@ function showHidePassword() {
 }
 
 const emailEditorOptions = { mode: 'email' };
-const sendEmailsOptions = ref(getSendEmailsOptions(form.value.send_emails));
+const sendEmailsOptions = ref<DxTextBoxTypes.Properties[]>([]);
 const addSendEmailButtonOptions = {
 	icon: 'add',
 	text: 'Добавить email',
@@ -215,14 +218,14 @@ const addSendEmailButtonOptions = {
 		sendEmailsOptions.value = getSendEmailsOptions(form.value.send_emails);
 	},
 };
-function getSendEmailsOptions(emails: string[]) {
-	const options = [];
+function getSendEmailsOptions(emails: string[]): DxTextBoxTypes.Properties[] {
+	const options: DxTextBoxTypes.Properties[] = [];
 	for (let i = 0; i < emails.length; i += 1) {
 		options.push(generateNewEmailOptions(i));
 	}
 	return options;
 }
-function generateNewEmailOptions(index: number) {
+function generateNewEmailOptions(index: number): DxTextBoxTypes.Properties {
 	return {
 		mode: 'email',
 		buttons: [
@@ -266,15 +269,25 @@ const saveButtonOptions = {
 			return;
 		}
 
-		const body = {
-			...form.value,
+		const body: Record<string, string | number> = {
+			name: form.value.name,
+			password: form.value.password,
+			doc_supplier: form.value.doc_supplier,
 			print_torg2: form.value.print_torg2 ? 1 : 0,
 			send_emails: form.value.send_emails.join(','),
 		};
+		if (!id.value) {
+			body.email = form.value.email;
+			body.inn = form.value.inn;
+		}
 		const result = await saveItem(body, id.value);
 		if (result) {
 			setSaved();
 			id.value = result;
+			formRef.value?.instance
+				.getEditor('email')
+				?.option('readOnly', !!id.value);
+			formRef.value?.instance.getEditor('inn')?.option('readOnly', !!id.value);
 			showSuccess('Сохранено');
 		}
 	},

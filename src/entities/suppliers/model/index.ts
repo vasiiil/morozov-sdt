@@ -3,9 +3,16 @@ import { useApi } from '../api';
 
 export function useModel() {
 	const api = useApi();
-	async function getItem(id: IListItem['supplier_id']): Promise<IItem | null> {
+	function getItem(
+		items: IListItem[],
+		id: IListItem['supplier_id'],
+	): IItem | null {
 		try {
-			const item = await api.getItem(id);
+			const item = items.find((item) => item.supplier_id === id);
+			if (!item) {
+				return null;
+			}
+
 			return {
 				...item,
 				send_emails: item.send_emails?.split(',') ?? [],

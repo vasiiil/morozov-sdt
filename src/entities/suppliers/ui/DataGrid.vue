@@ -119,6 +119,7 @@ const emit = defineEmits<{
 const dataGridRef = ref<InstanceType<typeof DxDataGrid>>();
 const api = useApi();
 
+const items = defineModel<IListItem[]>('items', { required: true });
 const dataSource = new DataSource<IListItem, 'supplier_id'>({
 	key: 'supplier_id',
 	load: async (loadOptions) => {
@@ -126,6 +127,7 @@ const dataSource = new DataSource<IListItem, 'supplier_id'>({
 			loadOptions.skip ?? 0,
 			loadOptions.take ?? 100,
 		);
+		items.value = result.data;
 		return {
 			...result,
 		};
