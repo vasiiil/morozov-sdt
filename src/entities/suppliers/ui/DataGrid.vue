@@ -23,6 +23,9 @@
 		<dx-scrolling mode="virtual"></dx-scrolling>
 		<dx-sorting mode="none"></dx-sorting>
 		<dx-toolbar>
+			<dx-toolbar-item location="before">
+				<h4 class="page-title">Поставщики</h4>
+			</dx-toolbar-item>
 			<dx-toolbar-item
 				location="after"
 				widget="dxButton"
