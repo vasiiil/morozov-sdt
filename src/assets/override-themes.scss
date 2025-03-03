@@ -84,6 +84,7 @@ $button-hover-color: var(--sdt-c-calestical-blue);
 		display: flex;
 		flex-wrap: wrap;
 		gap: 15px;
+		justify-content: space-between;
 		.dx-pages {
 			display: flex;
 			gap: 8px;
