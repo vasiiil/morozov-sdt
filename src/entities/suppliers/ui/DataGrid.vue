@@ -11,6 +11,7 @@
 		width="100%"
 		height="100%"
 		ref="dataGridRef"
+		@exporting="onExporting"
 	>
 		<dx-paging :page-size="50"></dx-paging>
 		<dx-pager
@@ -22,6 +23,10 @@
 		></dx-pager>
 		<dx-scrolling mode="virtual"></dx-scrolling>
 		<dx-sorting mode="none"></dx-sorting>
+		<dx-export
+			:enabled="true"
+			:formats="['xlsx']"
+		></dx-export>
 		<dx-toolbar>
 			<dx-toolbar-item location="before">
 				<h4 class="page-title">Поставщики</h4>
@@ -31,6 +36,7 @@
 				widget="dxButton"
 				:options="addButtonOptions"
 			></dx-toolbar-item>
+			<dx-toolbar-item name="exportButton"></dx-toolbar-item>
 		</dx-toolbar>
 
 		<dx-column
@@ -101,13 +107,18 @@ import { ref } from 'vue';
 import {
 	DxDataGrid,
 	DxColumn,
+	DxExport,
 	DxPaging,
 	DxPager,
 	DxScrolling,
 	DxSorting,
 	DxToolbar,
 	DxItem as DxToolbarItem,
+	type DxDataGridTypes,
 } from 'devextreme-vue/data-grid';
+import { Workbook } from 'exceljs';
+import { saveAs } from 'file-saver';
+import { exportDataGrid } from 'devextreme/excel_exporter';
 import type { DxButtonTypes } from 'devextreme-vue/button';
 
 import DataSource from 'devextreme/data/data_source';
@@ -127,8 +138,10 @@ const dataSource = new DataSource<IListItem, 'supplier_id'>({
 	key: 'supplier_id',
 	load: async (loadOptions) => {
 		const result = await api.getList(
-			loadOptions.skip ?? 0,
-			loadOptions.take ?? 100,
+			// @ts-expect-error typeof loadOptions = { isLoadingAll:  boolean }
+			loadOptions.isLoadingAll ? 0 : (loadOptions.skip ?? 0),
+			// @ts-expect-error typeof loadOptions = { isLoadingAll:  boolean }
+			loadOptions.isLoadingAll ? 0 : (loadOptions.take ?? 100),
 		);
 		items.value = result.data;
 		return {
@@ -153,4 +166,24 @@ function reloadDataSource() {
 	dataGridRef.value?.instance.getDataSource().reload();
 }
 defineExpose({ reloadDataSource });
+
+function onExporting(event: DxDataGridTypes.ExportingEvent) {
+	const workbook = new Workbook();
+	const worksheet = workbook.addWorksheet('Sheet 1');
+
+	exportDataGrid({
+		component: event.component,
+		worksheet,
+		autoFilterEnabled: true,
+	}).then(() => {
+		workbook.xlsx.writeBuffer().then((buffer) => {
+			saveAs(
+				new Blob([buffer], { type: 'application/octet-stream' }),
+				`Suppliers_${new Date().toLocaleDateString()}.xlsx`,
+			);
+		});
+	});
+
+	event.cancel = true;
+}
 </script>
