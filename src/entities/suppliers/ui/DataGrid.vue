@@ -105,7 +105,7 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import {
 	DxDataGrid,
 	DxColumn,
@@ -122,9 +122,9 @@ import { Workbook } from 'exceljs';
 import { saveAs } from 'file-saver';
 import { exportDataGrid } from 'devextreme/excel_exporter';
 import type { DxButtonTypes } from 'devextreme-vue/button';
-
 import DataSource from 'devextreme/data/data_source';
 
+import { useUser } from '@/entities/user';
 import { useApi } from '../api';
 import type { IListItem } from '../config';
 
@@ -167,6 +167,13 @@ const addButtonOptions: DxButtonTypes.Properties = {
 	},
 };
 
+const { user } = useUser();
+watch(
+	() => user.value.active_profile,
+	() => {
+		dataGridRef.value?.instance.refresh();
+	},
+);
 function reloadDataSource() {
 	dataGridRef.value?.instance.getDataSource().reload();
 }
