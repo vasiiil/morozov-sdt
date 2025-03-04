@@ -289,6 +289,7 @@ const saveButtonOptions = {
 				?.option('readOnly', !!id.value);
 			formRef.value?.instance.getEditor('inn')?.option('readOnly', !!id.value);
 			showSuccess('Сохранено');
+			close();
 		}
 	},
 };
