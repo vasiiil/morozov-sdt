@@ -12,6 +12,7 @@
 		height="100%"
 		ref="dataGridRef"
 		@exporting="onExporting"
+		@row-dbl-click="onRowDblClick"
 		@toolbar-preparing="onToolbarPreparing"
 	>
 		<dx-paging :page-size="50"></dx-paging>
@@ -151,6 +152,9 @@ const dataSource = new DataSource<IListItem, 'supplier_id'>({
 	},
 });
 
+function onRowDblClick(event: DxDataGridTypes.RowDblClickEvent<IListItem>) {
+	onSupplierIdClick(event.data.supplier_id);
+}
 function onSupplierIdClick(supplierId: IListItem['supplier_id']) {
 	emit('editClick', supplierId);
 }

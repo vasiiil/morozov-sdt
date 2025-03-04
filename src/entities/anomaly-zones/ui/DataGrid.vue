@@ -14,6 +14,7 @@
 		ref="dataGridRef"
 		@context-menu-preparing="onContextMenuPreparing"
 		@exporting="onExporting"
+		@row-dbl-click="onRowDblClick"
 		@toolbar-preparing="onToolbarPreparing"
 	>
 		<dx-paging :page-size="50"></dx-paging>
@@ -195,6 +196,9 @@ const statusLookupDataSource = {
 	sort: 'id',
 };
 
+function onRowDblClick(event: DxDataGridTypes.RowDblClickEvent<IListItem>) {
+	onAnomalyIdClick(event.data.anomaly_id);
+}
 function onAnomalyIdClick(anomalyId: IListItem['anomaly_id']) {
 	emit('editClick', anomalyId);
 }
