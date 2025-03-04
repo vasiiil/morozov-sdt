@@ -12,7 +12,7 @@
 			toolbar="bottom"
 			location="after"
 			widget="dxButton"
-			:options="cancelButtonOptions"
+			:options="resetButtonOptions"
 		></dx-toolbar-item>
 		<dx-toolbar-item
 			toolbar="bottom"
@@ -83,7 +83,7 @@
 			<dx-group-item caption="Доп. email для расылки уведомлений">
 				<dx-simple-item
 					v-for="(emailOptions, index) in sendEmailsOptions"
-					:key="`send-email${index + 1}`"
+					:key="`send-email-${index + 1}-${emailOptions.value}`"
 					:data-field="`send_emails[${index}]`"
 					:editor-options="emailOptions"
 				>
@@ -100,7 +100,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, useTemplateRef } from 'vue';
+import { nextTick, ref, useTemplateRef } from 'vue';
 import { DxPopup, DxToolbarItem } from 'devextreme-vue/popup';
 import {
 	DxForm,
@@ -138,14 +138,18 @@ const {
 const id = ref<IListItem['supplier_id'] | undefined>();
 const form = ref<IItem>(getDefaultForm());
 
-async function show(_id?: IListItem['supplier_id']) {
+async function show(
+	_id?: IListItem['supplier_id'],
+	resetForm: boolean = false,
+) {
 	id.value = _id;
-	formRef.value?.instance.reset();
 	clearSaved();
 	hidePassword();
 	showHidePassword();
 	if (_id === undefined) {
-		form.value = getDefaultForm();
+		if (resetForm) {
+			form.value = getDefaultForm();
+		}
 		popupRef.value?.instance.show();
 		return;
 	}
@@ -159,10 +163,14 @@ async function show(_id?: IListItem['supplier_id']) {
 function onShowing() {
 	formRef.value?.instance.getEditor('email')?.option('readOnly', !!id.value);
 	formRef.value?.instance.getEditor('inn')?.option('readOnly', !!id.value);
-
-	sendEmailsOptions.value = getSendEmailsOptions(form.value.send_emails);
+	resetForm();
 }
 defineExpose({ show });
+async function resetForm() {
+	resetSendEmailEditorOptions();
+	await nextTick();
+	formRef.value?.instance.reset(form.value);
+}
 
 const {
 	value: passwordShown,
@@ -215,19 +223,26 @@ const addSendEmailButtonOptions = {
 	stylingMode: 'outlined',
 	onClick: () => {
 		form.value.send_emails.push('');
-		sendEmailsOptions.value = getSendEmailsOptions(form.value.send_emails);
+		resetSendEmailEditorOptions();
 	},
 };
+function resetSendEmailEditorOptions() {
+	sendEmailsOptions.value = getSendEmailsOptions(form.value.send_emails);
+}
 function getSendEmailsOptions(emails: string[]): DxTextBoxTypes.Properties[] {
 	const options: DxTextBoxTypes.Properties[] = [];
 	for (let i = 0; i < emails.length; i += 1) {
-		options.push(generateNewEmailOptions(i));
+		options.push(generateNewEmailOptions(i, emails[i]));
 	}
 	return options;
 }
-function generateNewEmailOptions(index: number): DxTextBoxTypes.Properties {
+function generateNewEmailOptions(
+	index: number,
+	email: string,
+): DxTextBoxTypes.Properties {
 	return {
 		mode: 'email',
+		value: email,
 		buttons: [
 			{
 				name: 'trash',
@@ -237,9 +252,7 @@ function generateNewEmailOptions(index: number): DxTextBoxTypes.Properties {
 					icon: 'trash',
 					onClick: () => {
 						form.value.send_emails.splice(index, 1);
-						sendEmailsOptions.value = getSendEmailsOptions(
-							form.value.send_emails,
-						);
+						resetSendEmailEditorOptions();
 					},
 				},
 			},
@@ -252,12 +265,16 @@ function close() {
 }
 function onHidden() {
 	emit('hidden', saved.value);
+	if (saved.value || !!id.value) {
+		form.value = getDefaultForm();
+	}
 }
-const cancelButtonOptions = {
-	text: 'Отменить',
+const resetButtonOptions = {
+	text: 'Обновить',
 	stylingMode: 'outlined',
 	onClick: () => {
-		close();
+		show(id.value, true);
+		resetForm();
 	},
 };
 const saveButtonOptions = {
