@@ -14,6 +14,7 @@
 		ref="dataGridRef"
 		@context-menu-preparing="onContextMenuPreparing"
 		@exporting="onExporting"
+		@toolbar-preparing="onToolbarPreparing"
 	>
 		<dx-paging :page-size="50"></dx-paging>
 		<dx-pager
@@ -217,6 +218,15 @@ function onContextMenuPreparing(
 		onItemClick: () => {
 			event.component.state(null);
 		},
+	});
+}
+function onToolbarPreparing(event: DxDataGridTypes.ToolbarPreparingEvent) {
+	event.toolbarOptions.items?.forEach((item) => {
+		if (item.name === 'exportButton') {
+			item.options.text = 'Экспорт';
+			item.options.stylingMode = 'outlined';
+			item.showText = 'always';
+		}
 	});
 }
 function onExporting(event: DxDataGridTypes.ExportingEvent) {

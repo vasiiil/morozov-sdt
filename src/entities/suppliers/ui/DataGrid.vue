@@ -12,6 +12,7 @@
 		height="100%"
 		ref="dataGridRef"
 		@exporting="onExporting"
+		@toolbar-preparing="onToolbarPreparing"
 	>
 		<dx-paging :page-size="50"></dx-paging>
 		<dx-pager
@@ -167,6 +168,15 @@ function reloadDataSource() {
 }
 defineExpose({ reloadDataSource });
 
+function onToolbarPreparing(event: DxDataGridTypes.ToolbarPreparingEvent) {
+	event.toolbarOptions.items?.forEach((item) => {
+		if (item.name === 'exportButton') {
+			item.options.text = 'Экспорт';
+			item.options.stylingMode = 'outlined';
+			item.showText = 'always';
+		}
+	});
+}
 function onExporting(event: DxDataGridTypes.ExportingEvent) {
 	const workbook = new Workbook();
 	const worksheet = workbook.addWorksheet('Sheet 1');

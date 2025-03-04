@@ -11,6 +11,7 @@
 		height="100%"
 		ref="dataGridRef"
 		@exporting="onExporting"
+		@toolbar-preparing="onToolbarPreparing"
 	>
 		<dx-paging :page-size="15"></dx-paging>
 		<dx-pager
@@ -135,6 +136,15 @@ function onPhotoButtonClick(item: ICardProductListItem) {
 	photosRef.value?.open(anomalyId, item.photos);
 }
 
+function onToolbarPreparing(event: DxDataGridTypes.ToolbarPreparingEvent) {
+	event.toolbarOptions.items?.forEach((item) => {
+		if (item.name === 'exportButton') {
+			item.options.text = 'Экспорт';
+			item.options.stylingMode = 'outlined';
+			item.showText = 'always';
+		}
+	});
+}
 function onExporting(event: DxDataGridTypes.ExportingEvent) {
 	const workbook = new Workbook();
 	const worksheet = workbook.addWorksheet('Sheet 1');
