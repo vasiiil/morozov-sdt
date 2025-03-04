@@ -269,6 +269,7 @@ defineExpose({ clearSelectedMenuItems });
 	}
 	.dx-accordion-item-body {
 		padding-right: 0;
+		padding-bottom: 0;
 		&.empty-item-body {
 			padding: 0;
 		}
@@ -289,8 +290,12 @@ defineExpose({ clearSelectedMenuItems });
 	.menu-second-level {
 		display: grid;
 		grid-template-columns: 26px 1fr;
-		&:last-child .connector .bottom {
-			border-left: unset;
+		margin-bottom: 4px;
+		&:last-child {
+			margin-bottom: 0;
+			.connector .bottom {
+				border-left: unset;
+			}
 		}
 		.connector {
 			display: grid;
@@ -308,7 +313,7 @@ defineExpose({ clearSelectedMenuItems });
 					grid-row: 1 / 2;
 				}
 				&.bottom {
-					grid-row: 1 / 3;
+					grid-row: 1 / 4;
 				}
 			}
 		}
