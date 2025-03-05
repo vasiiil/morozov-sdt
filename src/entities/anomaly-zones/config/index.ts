@@ -39,12 +39,12 @@ export interface ICardProductListItem {
 	prod_name: string | null;
 }
 export interface IItem {
-	doc_id: number;
+	doc_id: number | null;
 	date_create: Date | null;
 	date_final_status: Date | null;
-	task_id: number;
-	status: AnomalyStatusTypes.TId;
-	purpose: number;
+	task_id: number | null;
+	status: AnomalyStatusTypes.TId | null;
+	purpose: number | null;
 	wb_box: unknown;
 	items: ICardProductListItem[];
 }

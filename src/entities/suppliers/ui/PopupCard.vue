@@ -1,12 +1,14 @@
 <template>
 	<dx-popup
-		ref="popup"
+		ref="dxPopup"
 		:title="`Поставщик ${id ?? ''}`"
+		:wrapper-attr="{ class: 'suppliers-popup-card' }"
 		width="60vw"
-		height="auto"
+		:height="625"
 		max-height="80vh"
 		@hidden="onHidden"
 		@showing="onShowing"
+		@shown="onShown"
 	>
 		<dx-toolbar-item
 			toolbar="bottom"
@@ -113,7 +115,8 @@ import {
 	DxRequiredRule,
 	DxStringLengthRule,
 } from 'devextreme-vue/form';
-import type { DxTextBoxTypes } from 'devextreme-vue/cjs/text-box';
+import type { DxTextBoxTypes } from 'devextreme-vue/text-box';
+import type { DxButton, DxButtonTypes } from 'devextreme-vue/button';
 
 import { useBoolean } from '@/shared/lib/use/base/useBoolean';
 import { showSuccess } from '@/shared/lib/utils/notifications';
@@ -127,7 +130,7 @@ const { items } = defineProps<{
 	items: IListItem[];
 }>();
 const { getItem, saveItem } = useModel();
-const popupRef = useTemplateRef<InstanceType<typeof DxPopup>>('popup');
+const popupRef = useTemplateRef<InstanceType<typeof DxPopup>>('dxPopup');
 const formRef = useTemplateRef<InstanceType<typeof DxForm>>('dxForm');
 
 const {
@@ -138,31 +141,32 @@ const {
 const id = ref<IListItem['supplier_id'] | undefined>();
 const form = ref<IItem>(getDefaultForm());
 
-async function show(
-	_id?: IListItem['supplier_id'],
-	resetForm: boolean = false,
-) {
+async function show(_id?: IListItem['supplier_id']) {
 	id.value = _id;
 	clearSaved();
 	hidePassword();
-	showHidePassword();
-	if (_id === undefined) {
-		if (resetForm) {
-			form.value = getDefaultForm();
-		}
-		popupRef.value?.instance.show();
-		return;
-	}
-	const item = getItem(items, _id);
-	if (!item) {
-		return;
-	}
-	form.value = item;
 	popupRef.value?.instance.show();
 }
 function onShowing() {
 	formRef.value?.instance.getEditor('email')?.option('readOnly', !!id.value);
 	formRef.value?.instance.getEditor('inn')?.option('readOnly', !!id.value);
+	showHidePassword();
+	setResetButtonText();
+}
+function onShown() {
+	if (id.value) {
+		const item = getItem(items, id.value);
+		if (item) {
+			form.value = item;
+		}
+	}
+	resetSendEmailEditorOptions();
+}
+function onHidden() {
+	emit('hidden', saved.value);
+	if (saved.value || !!id.value) {
+		form.value = getDefaultForm();
+	}
 	resetForm();
 }
 defineExpose({ show });
@@ -263,17 +267,23 @@ function generateNewEmailOptions(
 function close() {
 	popupRef.value?.instance.hide();
 }
-function onHidden() {
-	emit('hidden', saved.value);
-	if (saved.value || !!id.value) {
-		form.value = getDefaultForm();
-	}
+
+const resetButtonInstance = ref<InstanceType<(typeof DxButton)['instance']>>();
+function setResetButtonText() {
+	resetButtonInstance.value?.option('text', id.value ? 'Обновить' : 'Сбросить');
 }
-const resetButtonOptions = {
-	text: 'Обновить',
+const resetButtonOptions: DxButtonTypes.Properties = {
+	text: 'Сбросить',
 	stylingMode: 'outlined',
+	onInitialized: (event: DxButtonTypes.InitializedEvent) => {
+		if (event.component) {
+			resetButtonInstance.value = event.component;
+			setResetButtonText();
+		}
+	},
 	onClick: () => {
-		show(id.value, true);
+		const item = id.value ? getItem(items, id.value) : getDefaultForm();
+		form.value = item ?? getDefaultForm();
 		resetForm();
 	},
 };
@@ -313,3 +323,10 @@ const saveButtonOptions = {
 </script>
 
 <style lang="scss" scoped></style>
+<style lang="scss">
+.suppliers-popup-card {
+	.dx-popup-content {
+		padding-bottom: 0;
+	}
+}
+</style>

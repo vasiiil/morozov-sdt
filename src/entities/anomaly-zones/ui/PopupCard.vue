@@ -1,10 +1,12 @@
 <template>
 	<dx-popup
-		ref="popup"
+		ref="dxPopup"
 		:title="`Аномалия ${id}`"
 		width="60vw"
-		height="auto"
+		:height="620"
 		max-height="80vh"
+		@hidden="onHidden"
+		@shown="onShown"
 	>
 		<dx-form
 			v-model:form-data="form"
@@ -78,7 +80,7 @@ import type { IItem, ICardProductListItem, IListItem } from '../config';
 
 const { startLoading, stopLoading } = useLoader();
 const api = useApi();
-const popupRef = useTemplateRef<InstanceType<typeof DxPopup>>('popup');
+const popupRef = useTemplateRef<InstanceType<typeof DxPopup>>('dxPopup');
 const productsRef =
 	useTemplateRef<ComponentExposed<typeof CardProductsDataGrid>>(
 		'productDataGrid',
@@ -92,19 +94,33 @@ const {
 	refresh: refreshProductItems,
 } = useReactiveArray<ICardProductListItem>();
 
-async function show(_id: IListItem['anomaly_id']) {
+function show(_id: IListItem['anomaly_id']) {
 	id.value = _id;
-	resetProductItems();
-	startLoading();
-	const item = await api.getItem(_id);
-	stopLoading();
-	if (!item) {
-		return;
-	}
-	form.value = item;
-	refreshProductItems(item.items);
-	productsRef.value?.reloadDataSource();
 	popupRef.value?.instance.show();
+}
+async function onShown() {
+	startLoading();
+	const item = await api.getItem(id.value!);
+	stopLoading();
+	if (item) {
+		form.value = item;
+		refreshProductItems(item.items);
+		productsRef.value?.reloadDataSource();
+	}
+}
+function onHidden() {
+	resetProductItems();
+	productsRef.value?.reloadDataSource();
+	form.value = {
+		doc_id: null,
+		date_create: null,
+		date_final_status: null,
+		task_id: null,
+		status: null,
+		purpose: null,
+		wb_box: null,
+		items: [],
+	};
 }
 defineExpose({ show });
 
