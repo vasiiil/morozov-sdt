@@ -8,7 +8,6 @@
 		max-height="80vh"
 		@hidden="onHidden"
 		@showing="onShowing"
-		@shown="onShown"
 	>
 		<dx-toolbar-item
 			toolbar="bottom"
@@ -141,10 +140,16 @@ const {
 const id = ref<IListItem['supplier_id'] | undefined>();
 const form = ref<IItem>(getDefaultForm());
 
-async function show(_id?: IListItem['supplier_id']) {
+function show(_id?: IListItem['supplier_id']) {
 	id.value = _id;
 	clearSaved();
 	hidePassword();
+	if (id.value) {
+		const item = getItem(items, id.value);
+		if (item) {
+			form.value = item;
+		}
+	}
 	popupRef.value?.instance.show();
 }
 function onShowing() {
@@ -152,14 +157,6 @@ function onShowing() {
 	formRef.value?.instance.getEditor('inn')?.option('readOnly', !!id.value);
 	showHidePassword();
 	setResetButtonText();
-}
-function onShown() {
-	if (id.value) {
-		const item = getItem(items, id.value);
-		if (item) {
-			form.value = item;
-		}
-	}
 	resetSendEmailEditorOptions();
 }
 function onHidden() {

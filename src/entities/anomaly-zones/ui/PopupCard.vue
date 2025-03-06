@@ -6,7 +6,6 @@
 		:height="620"
 		max-height="80vh"
 		@hidden="onHidden"
-		@shown="onShown"
 	>
 		<dx-form
 			v-model:form-data="form"
@@ -94,11 +93,8 @@ const {
 	refresh: refreshProductItems,
 } = useReactiveArray<ICardProductListItem>();
 
-function show(_id: IListItem['anomaly_id']) {
+async function show(_id: IListItem['anomaly_id']) {
 	id.value = _id;
-	popupRef.value?.instance.show();
-}
-async function onShown() {
 	startLoading();
 	const item = await api.getItem(id.value!);
 	stopLoading();
@@ -107,6 +103,7 @@ async function onShown() {
 		refreshProductItems(item.items);
 		productsRef.value?.reloadDataSource();
 	}
+	popupRef.value?.instance.show();
 }
 function onHidden() {
 	resetProductItems();
