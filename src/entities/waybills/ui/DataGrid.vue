@@ -11,6 +11,7 @@
 		width="100%"
 		height="100%"
 		ref="dataGridRef"
+		@editor-prepared="onEditorPrepared"
 	>
 		<dx-paging :page-size="50"></dx-paging>
 		<dx-pager
@@ -116,7 +117,11 @@ import {
 	DxPager,
 	DxScrolling,
 	DxSorting,
+	type DxDataGridTypes,
 } from 'devextreme-vue/data-grid';
+import SelectBox, {
+	type ValueChangedEvent as SelectBoxValueChangedEvent,
+} from 'devextreme/ui/select_box';
 
 import DataSource from 'devextreme/data/data_source';
 import CustomStore from 'devextreme/data/custom_store';
@@ -198,13 +203,36 @@ const dataSource = new DataSource<IListItem, 'doc_id'>({
 		};
 	},
 });
+function onEditorPrepared(event: DxDataGridTypes.EditorPreparedEvent) {
+	if (event.parentType !== 'filterRow') {
+		return;
+	}
+	if (event.dataField === 'type_id') {
+		const lookup = SelectBox.getInstance(event.editorElement) as SelectBox;
+		lookup.on('valueChanged', function (args: SelectBoxValueChangedEvent) {
+			event.setValue(args.value);
 
+			statusLookup.value
+				?.getDataSource()
+				.filter(args.value ? ['type_id', '=', args.value] : null);
+			statusLookup.value?.getDataSource().load();
+		});
+	}
+	if (event.dataField === 'status') {
+		statusLookup.value = SelectBox.getInstance(
+			event.editorElement,
+		) as SelectBox;
+		statusLookup.value?.getDataSource().filter(['type_id', '=', 12]);
+		statusLookup.value?.getDataSource().load();
+	}
+}
+
+const statusLookup = ref<SelectBox>();
 const statusLookupDataSource = {
 	store: new CustomStore({
 		key: 'value',
 		loadMode: 'raw',
-		load: () =>
-			Object.entries(statuses).map((item) => ({ value: +item[0], text: item[1] })),
+		load: () => Object.entries(statuses).map((item) => item[1]),
 	}),
 	sort: { selector: 'value', desc: true },
 };
