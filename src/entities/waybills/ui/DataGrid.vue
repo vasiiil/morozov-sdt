@@ -52,7 +52,7 @@
 
 		<dx-column
 			data-field="doc_id"
-			data-type="string"
+			data-type="number"
 			caption="Внутренний № накладной"
 			cell-template="doc-id-cell"
 			:width="200"

@@ -1,5 +1,11 @@
 import { useApi as _useApi } from '@/shared/api';
-import type { IListItem, TFilter, TSort } from '../config';
+import type {
+	IAdditionalResponse,
+	IItemResponse,
+	IListItem,
+	TFilter,
+	TSort,
+} from '../config';
 type TListResponse = {
 	data: IListItem[];
 	params: {
@@ -39,16 +45,15 @@ export function useApi() {
 			};
 		}
 	}
-	// async function getItem(
-	// 	orderId: OrderTypes.TOrderId,
-	// ): Promise<TItemReturn | null> {
-	// 	try {
-	// 		const { data } = await api.get<TItemResopnse>(`/order/${orderId}`);
-	// 		return data;
-	// 	} catch {
-	// 		return null;
-	// 	}
-	// }
+	async function getItem(
+		id: IListItem['doc_id'],
+	): Promise<{ data: IItemResponse; additional: IAdditionalResponse }> {
+		const response = await api.get<{
+			data: IItemResponse;
+			additional: IAdditionalResponse;
+		}>(`/waybill_in/${id}`);
+		return response;
+	}
 
-	return { getList };
+	return { getList, getItem };
 }

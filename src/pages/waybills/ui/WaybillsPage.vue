@@ -1,21 +1,36 @@
 <template>
 	<div class="page-container">
-		<data-grid @edit-click="onEditClick"></data-grid>
-		<!-- <order-card ref="card"></order-card> -->
+		<data-grid
+			ref="dataGridRef"
+			@edit-click="onEditClick"
+			@add-click="onAddClick"
+		></data-grid>
+		<popup-card
+			ref="card"
+			@hidden="onCardHidden"
+		></popup-card>
 	</div>
 </template>
 
 <script setup lang="ts">
-// import { useTemplateRef } from 'vue';
-// import type { ComponentExposed } from 'vue-component-type-helpers';
+import { useTemplateRef } from 'vue';
+import type { ComponentExposed } from 'vue-component-type-helpers';
 
-import { DataGrid, type IListItem } from '@/entities/waybills';
-// import OrderCard from './OrderCard.vue';
+import { DataGrid, PopupCard, type IListItem } from '@/entities/waybills';
 
-// const cardRef = useTemplateRef<ComponentExposed<typeof OrderCard>>('card');
+const cardRef = useTemplateRef<ComponentExposed<typeof PopupCard>>('card');
+const dataGridRef =
+	useTemplateRef<ComponentExposed<typeof DataGrid>>('dataGridRef');
 function onEditClick(docId: IListItem['doc_id']) {
-	console.log('wqqeqwe', docId);
-	// cardRef.value?.show(orderId);
+	cardRef.value?.show(docId);
+}
+function onAddClick() {
+	cardRef.value?.show();
+}
+function onCardHidden(afterSave: boolean) {
+	if (afterSave) {
+		dataGridRef.value?.reloadDataSource();
+	}
 }
 </script>
 
