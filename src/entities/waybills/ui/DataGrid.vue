@@ -12,6 +12,9 @@
 		height="100%"
 		ref="dataGridRef"
 		@editor-prepared="onEditorPrepared"
+		@exporting="onExporting"
+		@row-dbl-click="onRowDblClick"
+		@toolbar-preparing="onToolbarPreparing"
 	>
 		<dx-paging :page-size="50"></dx-paging>
 		<dx-pager
@@ -31,6 +34,21 @@
 			:visible="true"
 			:search="{ enabled: true }"
 		></dx-header-filter>
+		<dx-export
+			:enabled="true"
+			:formats="['xlsx']"
+		></dx-export>
+		<dx-toolbar>
+			<dx-toolbar-item location="before">
+				<h4 class="page-title">Поставки</h4>
+			</dx-toolbar-item>
+			<dx-toolbar-item
+				location="after"
+				widget="dxButton"
+				:options="addButtonOptions"
+			></dx-toolbar-item>
+			<dx-toolbar-item name="exportButton"></dx-toolbar-item>
+		</dx-toolbar>
 
 		<dx-column
 			data-field="doc_id"
@@ -106,10 +124,11 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import {
 	DxDataGrid,
 	DxColumn,
+	DxExport,
 	DxFilterRow,
 	DxHeaderFilter,
 	DxLookup,
@@ -117,8 +136,14 @@ import {
 	DxPager,
 	DxScrolling,
 	DxSorting,
+	DxToolbar,
+	DxItem as DxToolbarItem,
 	type DxDataGridTypes,
 } from 'devextreme-vue/data-grid';
+import { Workbook } from 'exceljs';
+import { saveAs } from 'file-saver';
+import { exportDataGrid } from 'devextreme/excel_exporter';
+import type { DxButtonTypes } from 'devextreme-vue/button';
 import SelectBox, {
 	type ValueChangedEvent as SelectBoxValueChangedEvent,
 } from 'devextreme/ui/select_box';
@@ -128,6 +153,7 @@ import CustomStore from 'devextreme/data/custom_store';
 
 import { parseFilter } from '@/shared/lib/utils/dx-data-source';
 import { toFormat } from '@/shared/lib/utils/date';
+import { useUser } from '@/entities/user';
 
 import { useApi } from '../api';
 import {
@@ -142,6 +168,7 @@ import {
 
 const emit = defineEmits<{
 	(event: 'editClick', value: IListItem['doc_id']): void;
+	(event: 'addClick'): void;
 }>();
 const dataGridRef = ref<InstanceType<typeof DxDataGrid>>();
 const api = useApi();
@@ -194,8 +221,10 @@ const dataSource = new DataSource<IListItem, 'doc_id'>({
 		}
 		const result = await api.getList(
 			filter ?? {},
-			loadOptions.skip ?? 0,
-			loadOptions.take ?? 100,
+			// @ts-expect-error typeof loadOptions = { isLoadingAll:  boolean }
+			loadOptions.isLoadingAll ? 0 : (loadOptions.skip ?? 0),
+			// @ts-expect-error typeof loadOptions = { isLoadingAll:  boolean }
+			loadOptions.isLoadingAll ? 0 : (loadOptions.take ?? 100),
 			sort,
 		);
 		return {
@@ -232,7 +261,7 @@ const statusLookupDataSource = {
 	store: new CustomStore({
 		key: 'value',
 		loadMode: 'raw',
-		load: () => Object.entries(statuses).map((item) => item[1]),
+		load: () => statuses,
 	}),
 	sort: { selector: 'value', desc: true },
 };
@@ -249,5 +278,58 @@ const typeLookupDataSource = {
 
 function onDocIdClick(docId: IListItem['doc_id']) {
 	emit('editClick', docId);
+}
+function onRowDblClick(event: DxDataGridTypes.RowDblClickEvent<IListItem>) {
+	onDocIdClick(event.data.doc_id);
+}
+const addButtonOptions: DxButtonTypes.Properties = {
+	icon: 'add',
+	text: 'Создать',
+	stylingMode: 'outlined',
+	onClick: () => {
+		emit('addClick');
+	},
+};
+
+const { user } = useUser();
+watch(
+	() => user.value.active_profile,
+	() => {
+		dataGridRef.value?.instance.refresh();
+	},
+);
+
+function reloadDataSource() {
+	dataGridRef.value?.instance.getDataSource().reload();
+}
+
+defineExpose({ reloadDataSource });
+function onToolbarPreparing(event: DxDataGridTypes.ToolbarPreparingEvent) {
+	event.toolbarOptions.items?.forEach((item) => {
+		if (item.name === 'exportButton') {
+			item.options.text = 'Экспорт';
+			item.options.stylingMode = 'outlined';
+			item.showText = 'always';
+		}
+	});
+}
+function onExporting(event: DxDataGridTypes.ExportingEvent) {
+	const workbook = new Workbook();
+	const worksheet = workbook.addWorksheet('Sheet 1');
+
+	exportDataGrid({
+		component: event.component,
+		worksheet,
+		autoFilterEnabled: true,
+	}).then(() => {
+		workbook.xlsx.writeBuffer().then((buffer) => {
+			saveAs(
+				new Blob([buffer], { type: 'application/octet-stream' }),
+				`Waybills_${new Date().toLocaleDateString()}.xlsx`,
+			);
+		});
+	});
+
+	event.cancel = true;
 }
 </script>
