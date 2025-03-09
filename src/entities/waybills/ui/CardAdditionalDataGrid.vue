@@ -1,25 +1,11 @@
 <template>
-	<dx-data-grid
+	<data-grid
 		:data-source="store"
-		:hover-state-enabled="true"
-		:allow-column-reordering="true"
-		:allow-column-resizing="true"
-		:show-borders="true"
-		:column-min-width="50"
-		:element-attr="{ style: 'max-height: 490px;' }"
-		width="100%"
-		height="100%"
+		:max-height="490"
+		:page-size="15"
+		:templates="['serial-numbers-cell', 'expiration-cell', 'marks-cell']"
 		ref="dataGridRef"
 	>
-		<dx-paging :page-size="15"></dx-paging>
-		<dx-pager
-			:visible="true"
-			:display-mode="'full'"
-			:show-info="true"
-			:show-navigation-buttons="true"
-		></dx-pager>
-		<dx-scrolling mode="virtual"></dx-scrolling>
-
 		<dx-column
 			data-field="item_id"
 			data-type="number"
@@ -77,56 +63,63 @@
 		></dx-column>
 
 		<template #serial-numbers-cell="{ data: { data } }">
-			<a v-if="!!data.serial_numbers" @click.prevent="onSerialNumbersClick(data.serial_numbers)">
+			<a
+				v-if="!!data.serial_numbers"
+				@click.prevent="onSerialNumbersClick(data.serial_numbers)"
+			>
 				Да
 			</a>
 			<span v-else>Нет</span>
 		</template>
 		<template #expiration-cell="{ data: { data } }">
-			<a v-if="!!data.expiration" @click.prevent="onExpirationClick(data.expiration)">
+			<a
+				v-if="!!data.expiration"
+				@click.prevent="onExpirationClick(data.expiration)"
+			>
 				Да
 			</a>
 			<span v-else>Нет</span>
 		</template>
 		<template #marks-cell="{ data: { data } }">
-			<a v-if="!!data.marks" @click.prevent="onMarksClick(data.marks)">
+			<a
+				v-if="!!data.marks"
+				@click.prevent="onMarksClick(data.marks)"
+			>
 				Да
 			</a>
 			<span v-else>Нет</span>
 		</template>
-	</dx-data-grid>
+	</data-grid>
 </template>
 
 <script lang="ts" setup>
 import { ref } from 'vue';
-import {
-	DxDataGrid,
-	DxColumn,
-	DxPaging,
-	DxPager,
-	DxScrolling,
-} from 'devextreme-vue/data-grid';
+import type { ComponentExposed } from 'vue-component-type-helpers';
+import { DxColumn } from 'devextreme-vue/data-grid';
 import CustomStore from 'devextreme/data/custom_store';
 
 import { formatInteger } from '@/shared/lib/utils/formatters';
+import { DataGrid } from '@/shared/ui';
 import type { IAdditionalListItem, IListItem } from '../config';
 
 const { items } = defineProps<{
 	items: IAdditionalListItem[];
 	docId: IListItem['doc_id'] | undefined;
 }>();
-const dataGridRef = ref<InstanceType<typeof DxDataGrid>>();
+const dataGridRef = ref<ComponentExposed<typeof DataGrid>>();
 const store = new CustomStore({
 	key: 'item_id',
 	loadMode: 'raw',
 	load: () => items,
 });
 function reloadDataSource() {
-	dataGridRef.value?.instance.getDataSource().reload();
+	dataGridRef.value?.reloadDataSource();
 }
 defineExpose({ reloadDataSource });
 
-function onSerialNumbersClick(serialNumbers: IAdditionalListItem['serial_numbers']) {
+function onSerialNumbersClick(
+	serialNumbers: IAdditionalListItem['serial_numbers'],
+) {
 	if (!serialNumbers) {
 		return;
 	}

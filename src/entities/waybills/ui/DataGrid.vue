@@ -1,55 +1,19 @@
 <template>
-	<dx-data-grid
+	<data-grid
 		:data-source="dataSource"
-		:hover-state-enabled="true"
-		:allow-column-reordering="true"
-		:allow-column-resizing="true"
-		:show-borders="true"
-		:column-min-width="50"
-		:sync-lookup-filter-values="false"
 		:remote-operations="{ paging: true, sorting: true, filtering: true }"
-		width="100%"
-		height="100%"
+		add-enabled
+		filter-row-visible
+		header-filter-visible
+		export-enabled
+		grid-title="Поставки"
+		sorting-mode="multiple"
+		templates="doc-id-cell"
 		ref="dataGridRef"
+		@add-click="onAddClick"
 		@editor-prepared="onEditorPrepared"
-		@exporting="onExporting"
 		@row-dbl-click="onRowDblClick"
-		@toolbar-preparing="onToolbarPreparing"
 	>
-		<dx-paging :page-size="50"></dx-paging>
-		<dx-pager
-			:visible="true"
-			:display-mode="'full'"
-			:show-page-size-selector="true"
-			:show-info="true"
-			:show-navigation-buttons="true"
-		></dx-pager>
-		<dx-scrolling mode="virtual"></dx-scrolling>
-		<dx-sorting mode="multiple"></dx-sorting>
-		<dx-filter-row
-			:visible="true"
-			apply-filter="auto"
-		></dx-filter-row>
-		<dx-header-filter
-			:visible="true"
-			:search="{ enabled: true }"
-		></dx-header-filter>
-		<dx-export
-			:enabled="true"
-			:formats="['xlsx']"
-		></dx-export>
-		<dx-toolbar>
-			<dx-toolbar-item location="before">
-				<h4 class="page-title">Поставки</h4>
-			</dx-toolbar-item>
-			<dx-toolbar-item
-				location="after"
-				widget="dxButton"
-				:options="addButtonOptions"
-			></dx-toolbar-item>
-			<dx-toolbar-item name="exportButton"></dx-toolbar-item>
-		</dx-toolbar>
-
 		<dx-column
 			data-field="doc_id"
 			data-type="number"
@@ -120,30 +84,17 @@
 				{{ data.doc_id }}
 			</a>
 		</template>
-	</dx-data-grid>
+	</data-grid>
 </template>
 
 <script lang="ts" setup>
-import { ref, watch } from 'vue';
+import { ref } from 'vue';
+import type { ComponentExposed } from 'vue-component-type-helpers';
 import {
-	DxDataGrid,
 	DxColumn,
-	DxExport,
-	DxFilterRow,
-	DxHeaderFilter,
 	DxLookup,
-	DxPaging,
-	DxPager,
-	DxScrolling,
-	DxSorting,
-	DxToolbar,
-	DxItem as DxToolbarItem,
 	type DxDataGridTypes,
 } from 'devextreme-vue/data-grid';
-import { Workbook } from 'exceljs';
-import { saveAs } from 'file-saver';
-import { exportDataGrid } from 'devextreme/excel_exporter';
-import type { DxButtonTypes } from 'devextreme-vue/button';
 import SelectBox, {
 	type ValueChangedEvent as SelectBoxValueChangedEvent,
 } from 'devextreme/ui/select_box';
@@ -153,7 +104,7 @@ import CustomStore from 'devextreme/data/custom_store';
 
 import { parseFilter } from '@/shared/lib/utils/dx-data-source';
 import { toFormat } from '@/shared/lib/utils/date';
-import { useUser } from '@/entities/user';
+import { DataGrid } from '@/shared/ui';
 
 import { useApi } from '../api';
 import {
@@ -170,7 +121,7 @@ const emit = defineEmits<{
 	(event: 'editClick', value: IListItem['doc_id']): void;
 	(event: 'addClick'): void;
 }>();
-const dataGridRef = ref<InstanceType<typeof DxDataGrid>>();
+const dataGridRef = ref<ComponentExposed<typeof DataGrid>>();
 const api = useApi();
 
 const dataSource = new DataSource<IListItem, 'doc_id'>({
@@ -282,54 +233,12 @@ function onDocIdClick(docId: IListItem['doc_id']) {
 function onRowDblClick(event: DxDataGridTypes.RowDblClickEvent<IListItem>) {
 	onDocIdClick(event.data.doc_id);
 }
-const addButtonOptions: DxButtonTypes.Properties = {
-	icon: 'add',
-	text: 'Создать',
-	stylingMode: 'outlined',
-	onClick: () => {
-		emit('addClick');
-	},
-};
-
-const { user } = useUser();
-watch(
-	() => user.value.active_profile,
-	() => {
-		dataGridRef.value?.instance.refresh();
-	},
-);
+function onAddClick() {
+	emit('addClick');
+}
 
 function reloadDataSource() {
-	dataGridRef.value?.instance.getDataSource().reload();
+	dataGridRef.value?.reloadDataSource();
 }
-
 defineExpose({ reloadDataSource });
-function onToolbarPreparing(event: DxDataGridTypes.ToolbarPreparingEvent) {
-	event.toolbarOptions.items?.forEach((item) => {
-		if (item.name === 'exportButton') {
-			item.options.text = 'Экспорт';
-			item.options.stylingMode = 'outlined';
-			item.showText = 'always';
-		}
-	});
-}
-function onExporting(event: DxDataGridTypes.ExportingEvent) {
-	const workbook = new Workbook();
-	const worksheet = workbook.addWorksheet('Sheet 1');
-
-	exportDataGrid({
-		component: event.component,
-		worksheet,
-		autoFilterEnabled: true,
-	}).then(() => {
-		workbook.xlsx.writeBuffer().then((buffer) => {
-			saveAs(
-				new Blob([buffer], { type: 'application/octet-stream' }),
-				`Waybills_${new Date().toLocaleDateString()}.xlsx`,
-			);
-		});
-	});
-
-	event.cancel = true;
-}
 </script>
