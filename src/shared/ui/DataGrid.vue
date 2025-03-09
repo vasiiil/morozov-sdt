@@ -14,6 +14,7 @@
 		@editor-prepared="onEditorPrepared"
 		@exporting="onExporting"
 		@row-dbl-click="onRowDblClick"
+		@row-removed="onRowRemoved"
 		@toolbar-preparing="onToolbarPreparing"
 	>
 		<dx-paging :page-size="pageSize"></dx-paging>
@@ -34,6 +35,7 @@
 			:visible="headerFilterVisible"
 			:search="{ enabled: true }"
 		></dx-header-filter>
+		<dx-editing :allow-deleting="deleteEnabled"></dx-editing>
 		<dx-export
 			:enabled="exportEnabled"
 			:formats="['xlsx']"
@@ -72,6 +74,7 @@
 import { ref, watch } from 'vue';
 import {
 	DxDataGrid,
+	DxEditing,
 	DxExport,
 	DxFilterRow,
 	DxHeaderFilter,
@@ -95,9 +98,13 @@ import { useUser } from '@/entities/user';
 import { getHTMLSize } from '../lib/utils/html';
 export interface IProps<TListItem, TKey extends keyof TListItem>
 	extends /** @vue-ignore */ DxDataGridTypes.Properties {
-	dataSource: TListItem[] | DataSource<TListItem, TKey> | CustomStore<TListItem, TKey>;
+	dataSource:
+		| TListItem[]
+		| DataSource<TListItem, TKey>
+		| CustomStore<TListItem, TKey>;
 	gridTitle?: string;
 	addEnabled?: boolean;
+	deleteEnabled?: boolean;
 	exportEnabled?: boolean;
 	filterRowVisible?: boolean;
 	headerFilterVisible?: boolean;
@@ -108,12 +115,15 @@ export interface IProps<TListItem, TKey extends keyof TListItem>
 	exportFilteName?: string;
 	maxHeight?: number | string;
 	toolbarVisible?: boolean;
+
+	addButtonText?: string;
 }
 
 const emit = defineEmits<{
 	(event: 'editClick', value: TListItem[TKey]): void;
 	(event: 'addClick'): void;
 	(event: 'rowDblClick', value: DxDataGridTypes.RowDblClickEvent): void;
+	(event: 'rowRemoved', value: DxDataGridTypes.RowRemovedEvent): void;
 	(event: 'editorPrepared', value: DxDataGridTypes.EditorPreparedEvent): void;
 	(
 		event: 'toolbarPreparing',
@@ -128,6 +138,7 @@ const {
 	exportFilteName = 'DataGrid',
 	maxHeight,
 	toolbarVisible = true,
+	addButtonText = 'Создать',
 } = defineProps<IProps<TListItem, TKey>>();
 const dataGridRef = ref<InstanceType<typeof DxDataGrid>>();
 const preparedTemplates =
@@ -149,9 +160,12 @@ function onEditorPrepared(event: DxDataGridTypes.EditorPreparedEvent) {
 function onRowDblClick(event: DxDataGridTypes.RowDblClickEvent<TListItem>) {
 	emit('rowDblClick', event);
 }
+function onRowRemoved(event: DxDataGridTypes.RowRemovedEvent<TListItem, TKey>) {
+	emit('rowRemoved', event);
+}
 const addButtonOptions: DxButtonTypes.Properties = {
 	icon: 'add',
-	text: 'Создать',
+	text: addButtonText,
 	stylingMode: 'outlined',
 	onClick: () => {
 		emit('addClick');
