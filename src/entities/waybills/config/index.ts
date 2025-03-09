@@ -114,26 +114,11 @@ export type TDxDataGridFilters = {
 	status: TStatus;
 };
 
-export interface IItemResponse extends IListItem {
+export interface IItem extends IListItem {
 	date_arrive: string | null;
 	date_reception_begin: string | null;
 	parent_id: IListItem['id'] | null;
 	items: IProductListItem[];
-}
-export interface IItem
-	extends Omit<
-		IItemResponse,
-		| 'doc_id'
-		| 'date_create'
-		| 'date_status'
-		| 'date_arrive'
-		| 'date_reception_begin'
-		| 'type_name'
-	> {
-	date_create: Date | null;
-	date_status: Date | null;
-	date_arrive: Date | null;
-	date_reception_begin: Date | null;
 }
 export interface IProductListItem {
 	item_id: string;
@@ -142,6 +127,16 @@ export interface IProductListItem {
 	price_nds: number;
 	sum_nds: number;
 	order_id?: string;
+}
+export interface IProductItem {
+	item_id: string;
+	name: string;
+	barcode: string;
+	price_nds: number;
+	quantity: number;
+	cnt: number;
+	marks: boolean;
+	vas: number | null;
 }
 
 export interface IAdditionalExpirationListItem {
@@ -163,16 +158,15 @@ export interface IAdditionalListItem {
 export interface IAdditionalResponse {
 	[key: IProductListItem['item_id']]: IAdditionalListItem;
 }
-export function getDefaultForm(): IItem {
+export function getProductDefaultForm(): IProductItem {
 	return {
-		id: '',
-		date_create: null,
-		date_status: null,
-		date_arrive: null,
-		date_reception_begin: null,
-		type_id: 12,
-		status: 222,
-		parent_id: null,
-		items: [],
+		item_id: '',
+		name: '',
+		barcode: '',
+		price_nds: 0,
+		quantity: 0,
+		cnt: 0,
+		marks: false,
+		vas: null,
 	};
 }

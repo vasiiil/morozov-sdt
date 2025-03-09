@@ -1,7 +1,7 @@
 import { useApi as _useApi } from '@/shared/api';
 import type {
 	IAdditionalResponse,
-	IItemResponse,
+	IItem,
 	IListItem,
 	TFilter,
 	TSort,
@@ -47,9 +47,9 @@ export function useApi() {
 	}
 	async function getItem(
 		id: IListItem['doc_id'],
-	): Promise<{ data: IItemResponse; additional: IAdditionalResponse }> {
+	): Promise<{ data: IItem; additional: IAdditionalResponse }> {
 		const response = await api.get<{
-			data: IItemResponse;
+			data: IItem;
 			additional: IAdditionalResponse;
 		}>(`/waybill_in/${id}`);
 		return response;
