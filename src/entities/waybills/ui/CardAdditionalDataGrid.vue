@@ -65,7 +65,7 @@
 		<template #serial-numbers-cell="{ data: { data } }">
 			<a
 				v-if="!!data.serial_numbers"
-				@click.prevent="onSerialNumbersClick(data.serial_numbers)"
+				@click.prevent="onSerialNumbersClick(data)"
 			>
 				Да
 			</a>
@@ -74,7 +74,7 @@
 		<template #expiration-cell="{ data: { data } }">
 			<a
 				v-if="!!data.expiration"
-				@click.prevent="onExpirationClick(data.expiration)"
+				@click.prevent="onExpirationClick(data)"
 			>
 				Да
 			</a>
@@ -83,13 +83,20 @@
 		<template #marks-cell="{ data: { data } }">
 			<a
 				v-if="!!data.marks"
-				@click.prevent="onMarksClick(data.marks)"
+				@click.prevent="onMarksClick(data)"
 			>
 				Да
 			</a>
 			<span v-else>Нет</span>
 		</template>
 	</data-grid>
+	<additional-expiration-popup
+		ref="expirationPopup"
+	></additional-expiration-popup>
+	<additional-marks-popup ref="marksPopup"></additional-marks-popup>
+	<additional-serial-numbers-popup
+		ref="serialNumbersPopup"
+	></additional-serial-numbers-popup>
 </template>
 
 <script lang="ts" setup>
@@ -101,6 +108,9 @@ import CustomStore from 'devextreme/data/custom_store';
 import { formatInteger } from '@/shared/lib/utils/formatters';
 import { DataGrid } from '@/shared/ui';
 import type { IAdditionalListItem, IListItem } from '../config';
+import AdditionalExpirationPopup from './AdditionalExpirationPopup.vue';
+import AdditionalMarksPopup from './AdditionalMarksPopup.vue';
+import AdditionalSerialNumbersPopup from './AdditionalSerialNumbersPopup.vue';
 
 const { items } = defineProps<{
 	items: IAdditionalListItem[];
@@ -117,24 +127,29 @@ function reloadDataSource() {
 }
 defineExpose({ reloadDataSource });
 
-function onSerialNumbersClick(
-	serialNumbers: IAdditionalListItem['serial_numbers'],
-) {
-	if (!serialNumbers) {
+const serialNumbersPopup =
+	ref<ComponentExposed<typeof AdditionalSerialNumbersPopup>>();
+function onSerialNumbersClick(row: IAdditionalListItem) {
+	if (!row.serial_numbers) {
 		return;
 	}
-	console.log('onSerialNumbersClick', serialNumbers);
+	serialNumbersPopup.value?.show(row.item_id, row.serial_numbers);
 }
-function onExpirationClick(expiration: IAdditionalListItem['expiration']) {
-	if (!expiration) {
+
+const expirationPopup =
+	ref<ComponentExposed<typeof AdditionalExpirationPopup>>();
+function onExpirationClick(row: IAdditionalListItem) {
+	if (!row.expiration) {
 		return;
 	}
-	console.log('onExpirationClick', expiration);
+	expirationPopup.value?.show(row.item_id, row.expiration);
 }
-function onMarksClick(marks: IAdditionalListItem['marks']) {
-	if (!marks) {
+
+const marksPopup = ref<ComponentExposed<typeof AdditionalMarksPopup>>();
+function onMarksClick(row: IAdditionalListItem) {
+	if (!row.marks) {
 		return;
 	}
-	console.log('onMarksClick', marks);
+	marksPopup.value?.show(row.item_id, row.marks);
 }
 </script>

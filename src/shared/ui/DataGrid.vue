@@ -38,7 +38,7 @@
 			:enabled="exportEnabled"
 			:formats="['xlsx']"
 		></dx-export>
-		<dx-toolbar>
+		<dx-toolbar :visible="toolbarVisible">
 			<dx-toolbar-item
 				:visible="!!gridTitle"
 				location="before"
@@ -95,7 +95,7 @@ import { useUser } from '@/entities/user';
 import { getHTMLSize } from '../lib/utils/html';
 export interface IProps<TListItem, TKey extends keyof TListItem>
 	extends /** @vue-ignore */ DxDataGridTypes.Properties {
-	dataSource: DataSource<TListItem, TKey> | CustomStore<TListItem, TKey>;
+	dataSource: TListItem[] | DataSource<TListItem, TKey> | CustomStore<TListItem, TKey>;
 	gridTitle?: string;
 	addEnabled?: boolean;
 	exportEnabled?: boolean;
@@ -107,6 +107,7 @@ export interface IProps<TListItem, TKey extends keyof TListItem>
 	templates?: string | string[];
 	exportFilteName?: string;
 	maxHeight?: number | string;
+	toolbarVisible?: boolean;
 }
 
 const emit = defineEmits<{
@@ -126,6 +127,7 @@ const {
 	exportEnabled,
 	exportFilteName = 'DataGrid',
 	maxHeight,
+	toolbarVisible = true,
 } = defineProps<IProps<TListItem, TKey>>();
 const dataGridRef = ref<InstanceType<typeof DxDataGrid>>();
 const preparedTemplates =
