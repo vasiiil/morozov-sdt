@@ -1,6 +1,6 @@
 import moment from '../moment';
 export const dateFormat = 'YYYY-MM-DD';
-export const dateTimeFormat = 'YYYY-MM-DD hh:mm:ss';
+export const dateTimeFormat = 'YYYY-MM-DD HH:mm:ss';
 export function isValidDate(value: unknown): value is Date {
 	return value instanceof Date && !isNaN(value.getTime());
 }
