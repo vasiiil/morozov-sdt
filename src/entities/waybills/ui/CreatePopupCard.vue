@@ -38,7 +38,10 @@
 						message="Не заполнено поле Номер накладной"
 					></dx-required-rule>
 				</dx-simple-item>
-				<dx-simple-item data-field="date">
+				<dx-simple-item
+					data-field="date"
+					:editor-options="dateEditorOptions"
+				>
 					<dx-label text="Плановая дата поставки"></dx-label>
 					<dx-required-rule
 						message="Не заполнено поле Плановая дата поставки"
@@ -206,6 +209,7 @@ const saveButtonOptions = {
 		const body: TPrimitiveRecord = {
 			id: form.value.id,
 			date: toFormat(form.value.date),
+			without_marks: 1,
 		};
 		if (form.value.comment) {
 			body.comment = form.value.comment;
@@ -247,6 +251,8 @@ function onAddProduct(item: ICreateProductListItem) {
 	form.value.items.push(item);
 	reloadProducts();
 }
+
+const dateEditorOptions = { type: 'datetime' };
 </script>
 
 <style lang="scss" scoped></style>

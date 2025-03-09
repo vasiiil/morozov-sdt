@@ -58,7 +58,7 @@ export function useApi() {
 	async function createItem(
 		body: TPrimitiveRecord,
 	) {
-		await api.put('/waybill_in', body);
+		await api.put('/waybill', body);
 	}
 
 	return { getList, getItem, createItem };
