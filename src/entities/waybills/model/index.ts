@@ -18,9 +18,9 @@ export function useModel() {
 			return null;
 		}
 	}
-	async function saveItem(body: TPrimitiveRecord): Promise<boolean> {
+	async function saveItem(waybill: TPrimitiveRecord, items: TPrimitiveRecord[]): Promise<boolean> {
 		try {
-			await api.createItem({ waybill: body });
+			await api.createItem({ waybill, items });
 			return true;
 		} catch {
 			return false;

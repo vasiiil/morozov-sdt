@@ -206,18 +206,18 @@ const saveButtonOptions = {
 			return;
 		}
 
-		const body: TPrimitiveRecord = {
+		const waybill: TPrimitiveRecord = {
 			id: form.value.id,
 			date: toFormat(form.value.date),
 			without_marks: 1,
 		};
 		if (form.value.comment) {
-			body.comment = form.value.comment;
+			waybill.comment = form.value.comment;
 		}
 		if (form.value.supplier_id) {
-			body.supplier_id = form.value.supplier_id;
+			waybill.supplier_id = form.value.supplier_id;
 		}
-		body.items = form.value.items.map((item) => {
+		const items: TPrimitiveRecord[] = form.value.items.map((item) => {
 			const result: TPrimitiveRecord = {
 				item_id: item.item_id,
 				name: item.name,
@@ -238,7 +238,7 @@ const saveButtonOptions = {
 			}
 			return result;
 		});
-		const result = await saveItem(body);
+		const result = await saveItem(waybill, items);
 		if (result) {
 			setSaved();
 			showSuccess('Сохранено');
