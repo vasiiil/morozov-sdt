@@ -20,7 +20,7 @@ export function useModel() {
 	}
 	async function saveItem(body: TPrimitiveRecord): Promise<boolean> {
 		try {
-			await api.createItem(body);
+			await api.createItem({ waybill: body });
 			return true;
 		} catch {
 			return false;
