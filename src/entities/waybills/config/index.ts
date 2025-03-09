@@ -1,4 +1,5 @@
 import type { TObjectKeys } from '@/shared/lib/types/object';
+import { generateNumber } from '@/shared/lib/utils/generate';
 
 export const types = {
 	4: 'ТОРГ-2 недостача',
@@ -128,16 +129,6 @@ export interface IProductListItem {
 	sum_nds: number;
 	order_id?: string;
 }
-export interface IProductItem {
-	item_id: string;
-	name: string;
-	barcode: string;
-	price_nds: number;
-	quantity: number;
-	cnt: number;
-	marks: boolean;
-	vas: number | null;
-}
 
 export interface IAdditionalExpirationListItem {
 	qty: number;
@@ -158,15 +149,48 @@ export interface IAdditionalListItem {
 export interface IAdditionalResponse {
 	[key: IProductListItem['item_id']]: IAdditionalListItem;
 }
-export function getProductDefaultForm(): IProductItem {
+
+export interface ICreateProductListItem
+	extends Omit<IProductListItem, 'order_id'> {
+	price: number;
+	sum: number;
+	nds_sum: number;
+	nds: number;
+	marks: boolean;
+	barcode: string;
+	vas: string;
+	rowId: number;
+}
+export interface ICreateItem {
+	id: IListItem['id'];
+	date: Date | null;
+	comment: string;
+	supplier_id: number | null;
+	items: ICreateProductListItem[];
+}
+export function getDefaultForm(): ICreateItem {
+	return {
+		id: '',
+		date: new Date(),
+		comment: '',
+		supplier_id: null,
+		items: [],
+	};
+}
+export function getProductDefaultForm(): ICreateProductListItem {
 	return {
 		item_id: '',
 		name: '',
-		barcode: '',
+		quantity: 1,
+		price: 0,
+		sum: 0,
 		price_nds: 0,
-		quantity: 0,
-		cnt: 0,
+		sum_nds: 0,
+		nds_sum: 0,
+		nds: 0,
 		marks: false,
-		vas: null,
+		barcode: '',
+		vas: '',
+		rowId: generateNumber(),
 	};
 }

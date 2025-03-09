@@ -1,4 +1,5 @@
 import { useApi as _useApi } from '@/shared/api';
+import type { TPrimitiveRecord } from '@/shared/lib/types/object';
 import type {
 	IAdditionalResponse,
 	IItem,
@@ -54,6 +55,11 @@ export function useApi() {
 		}>(`/waybill_in/${id}`);
 		return response;
 	}
+	async function createItem(
+		body: TPrimitiveRecord,
+	) {
+		await api.put('/waybill_in', body);
+	}
 
-	return { getList, getItem };
+	return { getList, getItem, createItem };
 }

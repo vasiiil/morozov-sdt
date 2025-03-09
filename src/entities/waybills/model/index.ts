@@ -1,3 +1,4 @@
+import type { TPrimitiveRecord } from '@/shared/lib/types/object';
 import type { IAdditionalListItem, IItem, IListItem } from '../config';
 import { useApi } from '../api';
 
@@ -17,6 +18,14 @@ export function useModel() {
 			return null;
 		}
 	}
+	async function saveItem(body: TPrimitiveRecord): Promise<boolean> {
+		try {
+			await api.createItem(body);
+			return true;
+		} catch {
+			return false;
+		}
+	}
 
-	return { getItem };
+	return { getItem, saveItem };
 }

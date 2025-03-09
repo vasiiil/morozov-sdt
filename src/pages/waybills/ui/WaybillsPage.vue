@@ -7,8 +7,11 @@
 		></data-grid>
 		<popup-card
 			ref="card"
-			@hidden="onCardHidden"
 		></popup-card>
+		<create-popup-card
+			ref="createCard"
+			@hidden="onCardHidden"
+		></create-popup-card>
 	</div>
 </template>
 
@@ -16,16 +19,17 @@
 import { useTemplateRef } from 'vue';
 import type { ComponentExposed } from 'vue-component-type-helpers';
 
-import { DataGrid, PopupCard, type IListItem } from '@/entities/waybills';
+import { DataGrid, PopupCard, CreatePopupCard, type IListItem } from '@/entities/waybills';
 
 const cardRef = useTemplateRef<ComponentExposed<typeof PopupCard>>('card');
+const createCardRef = useTemplateRef<ComponentExposed<typeof CreatePopupCard>>('createCard');
 const dataGridRef =
 	useTemplateRef<ComponentExposed<typeof DataGrid>>('dataGridRef');
 function onEditClick(docId: IListItem['doc_id']) {
 	cardRef.value?.show(docId);
 }
 function onAddClick() {
-	cardRef.value?.show();
+	createCardRef.value?.show();
 }
 function onCardHidden(afterSave: boolean) {
 	if (afterSave) {

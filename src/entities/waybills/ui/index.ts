@@ -1,3 +1,4 @@
 import DataGrid from './DataGrid.vue';
 import PopupCard from './PopupCard.vue';
-export { DataGrid, PopupCard };
+import CreatePopupCard from './CreatePopupCard.vue';
+export { DataGrid, PopupCard, CreatePopupCard };
