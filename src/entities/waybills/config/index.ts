@@ -170,9 +170,11 @@ export interface ICreateItem {
 	items: ICreateProductListItem[];
 }
 export function getDefaultForm(): ICreateItem {
+	const date = new Date();
+	date.setDate(date.getDate() + 1);
 	return {
 		id: '',
-		date: new Date(),
+		date,
 		comment: '',
 		supplier_id: null,
 		items: [],
