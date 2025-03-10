@@ -8,6 +8,10 @@ $button-color: var(--sdt-c-calestical-blue);
 $button-hover-color: var(--sdt-c-calestical-blue);
 .dx-datagrid {
 	color: $text-color;
+
+	.dx-datagrid-drag-action:not(.dx-datagrid-action) {
+		cursor: grab;
+	}
 	.dx-datagrid-table {
 		border-collapse: separate;
 		border-spacing: 0 2px;
