@@ -47,12 +47,14 @@
 			>
 				<h4 class="page-title">{{ gridTitle }}</h4>
 			</dx-toolbar-item>
+			<slot name="beforeAddButton"></slot>
 			<dx-toolbar-item
 				location="after"
 				widget="dxButton"
 				:visible="addEnabled"
 				:options="addButtonOptions"
 			></dx-toolbar-item>
+			<slot name="afterAddButton"></slot>
 			<dx-toolbar-item name="exportButton"></dx-toolbar-item>
 		</dx-toolbar>
 
