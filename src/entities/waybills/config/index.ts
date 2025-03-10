@@ -137,6 +137,7 @@ export interface IAdditionalExpirationListItem {
 }
 export interface IAdditionalListItem {
 	item_id: IProductListItem['item_id'];
+	item_name: string;
 	qty: number;
 	qty_orig: number;
 	qty_defect: number;
@@ -147,7 +148,7 @@ export interface IAdditionalListItem {
 	marks?: string[];
 }
 export interface IAdditionalResponse {
-	[key: IProductListItem['item_id']]: IAdditionalListItem;
+	[key: IProductListItem['item_id']]: Omit<IAdditionalListItem, 'item_name'>;
 }
 
 export interface ICreateProductListItem

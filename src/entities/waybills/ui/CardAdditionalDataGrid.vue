@@ -6,11 +6,24 @@
 		:templates="['serial-numbers-cell', 'expiration-cell', 'marks-cell']"
 		ref="dataGridRef"
 	>
+		<template #beforeAddButton>
+			<dx-toolbar-item
+				location="after"
+				widget="dxButton"
+				:options="exportMarksButtonOptions"
+			></dx-toolbar-item>
+		</template>
 		<dx-column
 			data-field="item_id"
 			data-type="number"
 			caption="Артикул"
 			:width="200"
+		></dx-column>
+		<dx-column
+			data-field="item_name"
+			data-type="string"
+			caption="Наименование"
+			:width="250"
 		></dx-column>
 		<dx-column
 			data-field="qty_orig"
@@ -102,8 +115,10 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 import type { ComponentExposed } from 'vue-component-type-helpers';
-import { DxColumn } from 'devextreme-vue/data-grid';
+import { DxColumn, DxItem as DxToolbarItem } from 'devextreme-vue/data-grid';
 import CustomStore from 'devextreme/data/custom_store';
+import { Workbook } from 'exceljs';
+import { saveAs } from 'file-saver';
 
 import { formatInteger } from '@/shared/lib/utils/formatters';
 import { DataGrid } from '@/shared/ui';
@@ -112,9 +127,10 @@ import AdditionalExpirationPopup from './AdditionalExpirationPopup.vue';
 import AdditionalMarksPopup from './AdditionalMarksPopup.vue';
 import AdditionalSerialNumbersPopup from './AdditionalSerialNumbersPopup.vue';
 
-const { items } = defineProps<{
+const { items, docId, statusName } = defineProps<{
 	items: IAdditionalListItem[];
 	docId: IListItem['doc_id'] | undefined;
+	statusName: string;
 }>();
 const dataGridRef = ref<ComponentExposed<typeof DataGrid>>();
 const store = new CustomStore({
@@ -152,4 +168,39 @@ function onMarksClick(row: IAdditionalListItem) {
 	}
 	marksPopup.value?.show(row.item_id, row.marks);
 }
+
+const exportMarksButtonOptions = {
+	text: 'Экспорт марок',
+	icon: 'xlsxfile',
+	stylingMode: 'outlined',
+	onClick: () => {
+		const marks = [];
+		for (const item of items) {
+			if (item.marks) {
+				marks.push(
+					...item.marks.map((mark) => ({
+						item_id: item.item_id,
+						item_name: item.item_name,
+						mark,
+					})),
+				);
+			}
+		}
+		const workbook = new Workbook();
+		const worksheet = workbook.addWorksheet('Sheet 1');
+		worksheet.views = [{ state: 'frozen', xSplit: 0, ySplit: 1 }];
+		worksheet.columns = [
+			{ header: 'Артикул', key: 'item_id', width: 15 },
+			{ header: 'Наименование', key: 'item_name', width: 55 },
+			{ header: 'Марка', key: 'mark', width: 35 },
+		];
+		worksheet.addRows(marks);
+		workbook.xlsx.writeBuffer().then((buffer) => {
+			saveAs(
+				new Blob([buffer], { type: 'application/octet-stream' }),
+				`Поставка_${docId}_${statusName}_${new Date().toLocaleDateString()}.xlsx`,
+			);
+		});
+	},
+};
 </script>

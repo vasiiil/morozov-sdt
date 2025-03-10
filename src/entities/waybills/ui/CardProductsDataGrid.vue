@@ -3,6 +3,7 @@
 		:data-source="store"
 		:max-height="490"
 		:page-size="15"
+		grid-title="Товары"
 		export-enabled
 		ref="dataGridRef"
 	>
