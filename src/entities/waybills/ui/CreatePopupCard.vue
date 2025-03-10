@@ -208,7 +208,7 @@ const saveButtonOptions = {
 
 		const waybill: TPrimitiveRecord = {
 			id: form.value.id,
-			date: toFormat(form.value.date),
+			date: toFormat(form.value.date, 'YYYY-MM-DD HH:mm'),
 			without_marks: 1,
 		};
 		if (form.value.comment) {
