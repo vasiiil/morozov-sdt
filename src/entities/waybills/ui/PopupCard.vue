@@ -53,8 +53,6 @@
 					<dx-simple-item data-field="date_reception_begin">
 						<dx-label text="Дата начала приемки"></dx-label>
 					</dx-simple-item>
-				</dx-tab>
-				<dx-tab title="Товары">
 					<dx-simple-item :col-span="2">
 						<div class="card-data-grid">
 							<card-products-data-grid
@@ -71,6 +69,7 @@
 							<card-additional-data-grid
 								:items="additionalItems"
 								:doc-id="id"
+								:status-name="statusName"
 								ref="additionalDataGrid"
 							></card-additional-data-grid>
 						</div>
@@ -82,7 +81,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, useTemplateRef } from 'vue';
+import { computed, ref, useTemplateRef } from 'vue';
 import type { ComponentExposed } from 'vue-component-type-helpers';
 import { DxPopup, DxToolbarItem } from 'devextreme-vue/popup';
 import {
@@ -179,6 +178,11 @@ const statusEditorOptions = {
 	valueExpr: 'value',
 	value: form.value?.status,
 };
+const statusName = computed(() => {
+	return (
+		statuses.find((status) => status.value === form.value?.status)?.text ?? ''
+	);
+});
 
 const tabPanel = ref<TabPanel>();
 const tabPanelOptions = {
