@@ -3,15 +3,16 @@
 		:data-source="store"
 		:max-height="490"
 		:page-size="15"
-		grid-title="Товары"
+		:pager-visible="false"
+		:grid-title="`Товары (${items.length})`"
 		export-enabled
 		ref="dataGridRef"
 	>
 		<dx-column
 			data-field="item_id"
-			data-type="number"
+			data-type="string"
 			caption="Артикул"
-			:width="200"
+			:width="130"
 		></dx-column>
 		<dx-column
 			data-field="name"
@@ -37,7 +38,7 @@
 			data-field="order_id"
 			data-type="string"
 			caption="Заказ"
-			:width="150"
+			:width="120"
 		></dx-column>
 	</data-grid>
 </template>

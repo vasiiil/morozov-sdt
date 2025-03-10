@@ -69,7 +69,7 @@
 						>
 							<dx-column
 								data-field="item_id"
-								data-type="number"
+								data-type="string"
 								caption="Артикул"
 								:width="200"
 							></dx-column>
