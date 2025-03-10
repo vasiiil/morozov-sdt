@@ -11,15 +11,21 @@
 		width="100%"
 		height="100%"
 		ref="dataGridRef"
+		@context-menu-preparing="onContextMenuPreparing"
 		@editor-prepared="onEditorPrepared"
 		@exporting="onExporting"
 		@row-dbl-click="onRowDblClick"
 		@row-removed="onRowRemoved"
 		@toolbar-preparing="onToolbarPreparing"
 	>
+		<dx-state-storing
+			:enabled="!!storageKey"
+			type="localStorage"
+			:storage-key="`${storageKey}-data-grid-state-storage-key`"
+		></dx-state-storing>
 		<dx-paging :page-size="pageSize"></dx-paging>
 		<dx-pager
-			:visible="true"
+			:visible="pagerVisible"
 			:display-mode="'full'"
 			:show-page-size-selector="true"
 			:show-info="true"
@@ -84,6 +90,7 @@ import {
 	DxPager,
 	DxScrolling,
 	DxSorting,
+	DxStateStoring,
 	DxToolbar,
 	DxItem as DxToolbarItem,
 	type DxDataGridTypes,
@@ -112,6 +119,7 @@ export interface IProps<TListItem, TKey extends keyof TListItem>
 	headerFilterVisible?: boolean;
 	sortingMode?: Sorting['mode'];
 	pageSize?: number;
+	pagerVisible?: boolean;
 
 	templates?: string | string[];
 	exportFilteName?: string;
@@ -119,6 +127,7 @@ export interface IProps<TListItem, TKey extends keyof TListItem>
 	toolbarVisible?: boolean;
 
 	addButtonText?: string;
+	storageKey?: string;
 }
 
 const emit = defineEmits<{
@@ -135,6 +144,7 @@ const emit = defineEmits<{
 const {
 	sortingMode = 'none',
 	pageSize = 50,
+	pagerVisible = true,
 	templates,
 	exportEnabled,
 	exportFilteName = 'DataGrid',
@@ -217,5 +227,20 @@ function onExporting(event: DxDataGridTypes.ExportingEvent) {
 	});
 
 	event.cancel = true;
+}
+
+function onContextMenuPreparing(
+	event: DxDataGridTypes.ContextMenuPreparingEvent,
+) {
+	if (!event.items) {
+		event.items = [];
+	}
+	event.items.push({
+		text: 'Отображение по умолчанию',
+		icon: 'remove',
+		onItemClick: () => {
+			event.component.state(null);
+		},
+	});
 }
 </script>
