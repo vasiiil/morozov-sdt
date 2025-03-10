@@ -89,6 +89,24 @@ onMounted(async () => {
 			link.href = mayaFavicon;
 		}
 	}
+
+	document.addEventListener('click', function (event: MouseEvent) {
+		const target = event.target as HTMLSpanElement;
+		if (!target || !target.classList.contains('copy-to-clipboard')) {
+			return;
+		}
+		if (!document.createRange || !window.getSelection) {
+			return;
+		}
+		const range = document.createRange();
+		range.selectNode(target);
+		const selection = window.getSelection();
+		if (!selection) {
+			return;
+		}
+		selection.removeAllRanges();
+		selection.addRange(range);
+	});
 });
 </script>
 

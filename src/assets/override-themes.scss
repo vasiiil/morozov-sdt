@@ -127,6 +127,13 @@ $button-hover-color: var(--sdt-c-calestical-blue);
 			background-color: $row-alt-color;
 		}
 		color: $text-color;
+
+		&.dx-popup-title {
+			.copy-to-clipboard {
+				cursor: pointer;
+				user-select: text;
+			}
+		}
 	}
 }
 
