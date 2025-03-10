@@ -1,13 +1,23 @@
 <template>
 	<dx-popup
 		ref="dxPopup"
-		:title="`Поставка ${id ?? ''}`"
 		:wrapper-attr="{ class: 'waybill-popup-card' }"
 		width="60vw"
 		:height="675"
 		max-height="90vh"
 		@showing="onShowing"
 	>
+		<dx-toolbar-item location="before">
+			<div class="title-container">
+				<span>Поставка</span>
+				<span
+					v-show="!!id"
+					class="copy-to-clipboard"
+					>{{ id }}</span
+				>
+				<span v-show="!!form?.type_name">({{ form?.type_name }})</span>
+			</div>
+		</dx-toolbar-item>
 		<dx-toolbar-item
 			toolbar="bottom"
 			location="after"
@@ -27,14 +37,14 @@
 					:col-count="2"
 					css-class="tab-item-padding-0"
 				>
-					<dx-simple-item data-field="type_name">
-						<dx-label text="Тип накладной"></dx-label>
-					</dx-simple-item>
-					<dx-empty-item></dx-empty-item>
 					<dx-simple-item data-field="id">
 						<dx-label text="Номер накладной"></dx-label>
 					</dx-simple-item>
-					<dx-simple-item data-field="date_create">
+					<dx-simple-item
+						data-field="date_create"
+						editor-type="dxDateBox"
+						:editor-options="dateEditorOptions"
+					>
 						<dx-label text="Дата создания"></dx-label>
 					</dx-simple-item>
 					<dx-simple-item
@@ -44,13 +54,25 @@
 					>
 						<dx-label text="Статус"></dx-label>
 					</dx-simple-item>
-					<dx-simple-item data-field="date_status">
+					<dx-simple-item
+						data-field="date_status"
+						editor-type="dxDateBox"
+						:editor-options="dateEditorOptions"
+					>
 						<dx-label text="Дата статуса"></dx-label>
 					</dx-simple-item>
-					<dx-simple-item data-field="date_arrive">
+					<dx-simple-item
+						data-field="date_arrive"
+						editor-type="dxDateBox"
+						:editor-options="dateEditorOptions"
+					>
 						<dx-label text="Дата прибытия"></dx-label>
 					</dx-simple-item>
-					<dx-simple-item data-field="date_reception_begin">
+					<dx-simple-item
+						data-field="date_reception_begin"
+						editor-type="dxDateBox"
+						:editor-options="dateEditorOptions"
+					>
 						<dx-label text="Дата начала приемки"></dx-label>
 					</dx-simple-item>
 					<dx-simple-item :col-span="2">
@@ -90,7 +112,6 @@ import {
 	DxSimpleItem,
 	DxTabbedItem,
 	DxTab,
-	DxEmptyItem,
 } from 'devextreme-vue/form';
 import type { DxButtonTypes } from 'devextreme-vue/button';
 import TabPanel, {
@@ -190,6 +211,8 @@ const tabPanelOptions = {
 		tabPanel.value = event.component;
 	},
 };
+
+const dateEditorOptions = { type: 'datetime' };
 </script>
 
 <style lang="scss" scoped>
@@ -202,6 +225,17 @@ const tabPanelOptions = {
 </style>
 <style lang="scss">
 .waybill-popup-card {
+	.title-container {
+		max-width: 400px;
+		font-size: 20px;
+		font-weight: 500;
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+		& > span {
+			margin-right: 0.5ch;
+		}
+	}
 	.dx-popup-content {
 		padding-bottom: 0;
 		.dx-tabpanel-container {
