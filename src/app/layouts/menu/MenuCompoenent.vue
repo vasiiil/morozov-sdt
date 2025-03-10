@@ -159,7 +159,7 @@ const menuItems: IMenu[] = [
 		text: 'Накладные',
 		items: [
 			{
-				text: 'Просмотр поставок',
+				text: 'Поставки',
 				pathName: 'waybillsPage',
 			},
 			{
