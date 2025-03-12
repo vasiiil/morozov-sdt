@@ -420,14 +420,18 @@ function validateQuantity(value: string): ICreateProductListItem['quantity'] {
 	value = value.replaceAll(' ', '');
 	const pattern = /^\d+$/;
 	if (!pattern.test(value)) {
-		throw 'Количество должно быть целым положительным числом';
+		throw 'Количество должно быть целым числом';
 	}
-	return parseInt(value);
+	const intValue = parseInt(value);
+	if (intValue === 0) {
+		throw 'Количество должно быть больше 0';
+	}
+	return intValue;
 }
 function validatePrice(value: string): ICreateProductListItem['price'] {
 	value = validateOnEmpty(value, 'Не заполнена Цена');
 	value = value.replaceAll(' ', '').replaceAll(',', '.');
-	const pattern = /^\d+(\.\d\d)?$/;
+	const pattern = /^\d+(\.\d\d?)?$/;
 	if (!pattern.test(value)) {
 		throw 'Цена должна быть положительным числом';
 	}
