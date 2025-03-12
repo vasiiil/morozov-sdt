@@ -111,7 +111,7 @@ const cardRef = useTemplateRef<ComponentExposed<typeof ProductCard>>('card');
 const createButtonOptions = {
 	icon: 'plus',
 	text: 'Добавить',
-	stylingMode: 'outined',
+	stylingMode: 'outlined',
 	onClick: () => {
 		cardRef.value?.show();
 	},
