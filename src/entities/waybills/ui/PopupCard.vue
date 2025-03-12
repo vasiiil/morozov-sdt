@@ -2,7 +2,7 @@
 	<dx-popup
 		ref="dxPopup"
 		:wrapper-attr="{ class: 'waybill-popup-card' }"
-		width="60vw"
+		width="90vw"
 		:height="675"
 		max-height="90vh"
 		@showing="onShowing"
@@ -34,7 +34,7 @@
 			<dx-tabbed-item :tab-panel-options="tabPanelOptions">
 				<dx-tab
 					title="Основная информация"
-					:col-count="2"
+					:col-count="3"
 					css-class="tab-item-padding-0"
 				>
 					<dx-simple-item data-field="id">
@@ -46,6 +46,13 @@
 						:editor-options="dateEditorOptions"
 					>
 						<dx-label text="Дата создания"></dx-label>
+					</dx-simple-item>
+					<dx-simple-item
+						data-field="date_arrive"
+						editor-type="dxDateBox"
+						:editor-options="dateEditorOptions"
+					>
+						<dx-label text="Дата прибытия"></dx-label>
 					</dx-simple-item>
 					<dx-simple-item
 						data-field="status"
@@ -62,20 +69,13 @@
 						<dx-label text="Дата статуса"></dx-label>
 					</dx-simple-item>
 					<dx-simple-item
-						data-field="date_arrive"
-						editor-type="dxDateBox"
-						:editor-options="dateEditorOptions"
-					>
-						<dx-label text="Дата прибытия"></dx-label>
-					</dx-simple-item>
-					<dx-simple-item
 						data-field="date_reception_begin"
 						editor-type="dxDateBox"
 						:editor-options="dateEditorOptions"
 					>
 						<dx-label text="Дата начала приемки"></dx-label>
 					</dx-simple-item>
-					<dx-simple-item :col-span="2">
+					<dx-simple-item :col-span="3">
 						<div class="card-data-grid">
 							<card-products-data-grid
 								:items="productItems"

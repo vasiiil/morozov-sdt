@@ -34,9 +34,6 @@
 			>
 				<dx-simple-item data-field="id">
 					<dx-label text="Номер накладной"></dx-label>
-					<dx-required-rule
-						message="Не заполнено поле Номер накладной"
-					></dx-required-rule>
 				</dx-simple-item>
 				<dx-simple-item
 					data-field="date"
@@ -53,9 +50,7 @@
 				>
 					<dx-label text="Поставщик"></dx-label>
 				</dx-simple-item>
-				<dx-simple-item data-field="comment">
-					<dx-label text="Комментарий"></dx-label>
-				</dx-simple-item>
+				<dx-empty-item></dx-empty-item>
 				<dx-simple-item :col-span="2">
 					<div class="products-data-grid">
 						<data-grid
@@ -149,6 +144,7 @@ import {
 	DxLabel,
 	DxSimpleItem,
 	DxGroupItem,
+	DxEmptyItem,
 	DxRequiredRule,
 } from 'devextreme-vue/form';
 import type { DxButtonTypes } from 'devextreme-vue/button';
@@ -242,9 +238,6 @@ const saveButtonOptions = {
 			date: toFormat(form.value.date, 'YYYY-MM-DD HH:mm'),
 			without_marks: 1,
 		};
-		if (form.value.comment) {
-			waybill.comment = form.value.comment;
-		}
 		if (form.value.supplier_id) {
 			waybill.supplier_id = form.value.supplier_id;
 		}
