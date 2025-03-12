@@ -25,14 +25,28 @@
 			data-type="number"
 			caption="Цена"
 			:format="formatCurrency"
-			:width="120"
+			:width="150"
 		></dx-column>
 		<dx-column
 			data-field="quantity"
 			data-type="number"
 			caption="Кол-во"
 			:format="formatInteger"
-			:width="120"
+			:width="150"
+		></dx-column>
+		<dx-column
+			data-field="marks"
+			data-type="boolean"
+			caption="Маркировка"
+			alignment="right"
+			:show-editor-always="false"
+			:width="100"
+		></dx-column>
+		<dx-column
+			data-field="vas"
+			data-type="string"
+			caption="VAS"
+			:width="100"
 		></dx-column>
 		<dx-column
 			data-field="order_id"

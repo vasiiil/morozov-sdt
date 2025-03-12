@@ -127,6 +127,8 @@ export interface IProductListItem {
 	quantity: number;
 	price_nds: number;
 	sum_nds: number;
+	marks: boolean;
+	vas: string;
 	order_id?: string;
 }
 
@@ -157,15 +159,12 @@ export interface ICreateProductListItem
 	sum: number;
 	nds_sum: number;
 	nds: number;
-	marks: boolean;
 	barcode: string;
-	vas: string;
 	rowId: number;
 }
 export interface ICreateItem {
 	id: IListItem['id'];
 	date: Date | null;
-	comment: string;
 	supplier_id: number | null;
 	items: ICreateProductListItem[];
 }
@@ -175,7 +174,6 @@ export function getDefaultForm(): ICreateItem {
 	return {
 		id: '',
 		date,
-		comment: '',
 		supplier_id: null,
 		items: [],
 	};

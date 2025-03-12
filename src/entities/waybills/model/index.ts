@@ -18,7 +18,16 @@ export function useModel() {
 				productNames.set(product.item_id, product.name);
 			}
 			return {
-				data: response.data,
+				data: {
+					...response.data,
+					items: response.data.items.map((item) => ({
+						...item,
+						marks:
+							item.item_id in response.additional &&
+							'marks' in response.additional[item.item_id],
+						vas: response.additional[item.item_id]?.vas?.join(', ') ?? '',
+					})),
+				},
 				additional: Object.entries(response.additional).map((item) => ({
 					...item[1],
 					item_name: productNames.get(item[1].item_id) ?? '',
