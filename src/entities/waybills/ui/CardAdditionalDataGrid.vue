@@ -10,7 +10,7 @@
 			<dx-toolbar-item
 				location="after"
 				widget="dxButton"
-				:options="exportMarksButtonOptions"
+				:options="exportAdditionalButtonOptions"
 			></dx-toolbar-item>
 		</template>
 		<dx-column
@@ -120,6 +120,7 @@ import CustomStore from 'devextreme/data/custom_store';
 import { Workbook } from 'exceljs';
 import { saveAs } from 'file-saver';
 
+import { toDate } from '@/shared/lib/utils/date';
 import { formatInteger } from '@/shared/lib/utils/formatters';
 import { DataGrid } from '@/shared/ui';
 import type { IAdditionalListItem, IListItem } from '../config';
@@ -169,8 +170,8 @@ function onMarksClick(row: IAdditionalListItem) {
 	marksPopup.value?.show(row.item_id, row.marks);
 }
 
-const exportMarksButtonOptions = {
-	text: 'Экспорт марок',
+const exportAdditionalButtonOptions = {
+	text: 'Марки, СН, СГ',
 	icon: 'xlsxfile',
 	stylingMode: 'outlined',
 	onClick: () => {
@@ -186,15 +187,65 @@ const exportMarksButtonOptions = {
 				);
 			}
 		}
+		const serialNumbers = [];
+		for (const item of items) {
+			if (item.serial_numbers) {
+				serialNumbers.push(
+					...item.serial_numbers.map((serial_number) => ({
+						item_id: item.item_id,
+						item_name: item.item_name,
+						serial_number,
+					})),
+				);
+			}
+		}
+		const expirations = [];
+		for (const item of items) {
+			if (item.expiration) {
+				expirations.push(
+					...item.expiration.map((expiration) => {
+						const date = toDate(expiration.date);
+						if (date) {
+							date.setHours(12);
+						}
+						return {
+							item_id: item.item_id,
+							item_name: item.item_name,
+							...expiration,
+							date,
+						};
+					}),
+				);
+			}
+		}
 		const workbook = new Workbook();
-		const worksheet = workbook.addWorksheet('Sheet 1');
+		let worksheet = workbook.addWorksheet('Маркировка');
 		worksheet.views = [{ state: 'frozen', xSplit: 0, ySplit: 1 }];
 		worksheet.columns = [
 			{ header: 'Артикул', key: 'item_id', width: 15 },
 			{ header: 'Наименование', key: 'item_name', width: 55 },
-			{ header: 'Марка', key: 'mark', width: 35 },
+			{ header: 'Маркировка', key: 'mark', width: 35 },
 		];
 		worksheet.addRows(marks);
+
+		worksheet = workbook.addWorksheet('Серийные номера');
+		worksheet.columns = [
+			{ header: 'Артикул', key: 'item_id', width: 15 },
+			{ header: 'Наименование', key: 'item_name', width: 55 },
+			{ header: 'Серийный номер', key: 'serial_number', width: 35 },
+		];
+		worksheet.addRows(serialNumbers);
+
+		worksheet = workbook.addWorksheet('Сроки годности');
+		worksheet.columns = [
+			{ header: 'Артикул', key: 'item_id', width: 15 },
+			{ header: 'Наименование', key: 'item_name', width: 55 },
+			{ header: 'Кол-во', key: 'qty', width: 7 },
+			{ header: 'Дата', key: 'date', width: 12 },
+			{ header: 'Сток', key: 'stock', width: 5 },
+		];
+		worksheet.addRows(expirations);
+
 		workbook.xlsx.writeBuffer().then((buffer) => {
 			saveAs(
 				new Blob([buffer], { type: 'application/octet-stream' }),
