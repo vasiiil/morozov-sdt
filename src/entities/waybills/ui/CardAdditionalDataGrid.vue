@@ -3,6 +3,7 @@
 		:data-source="store"
 		:max-height="490"
 		:page-size="15"
+		:pager-visible="false"
 		:templates="['serial-numbers-cell', 'expiration-cell', 'marks-cell']"
 		ref="dataGridRef"
 	>
@@ -17,7 +18,7 @@
 			data-field="item_id"
 			data-type="string"
 			caption="Артикул"
-			:width="200"
+			:width="130"
 		></dx-column>
 		<dx-column
 			data-field="item_name"
