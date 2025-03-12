@@ -46,7 +46,8 @@
 				</dx-simple-item>
 				<dx-simple-item
 					data-field="supplier_id"
-					editor-type="dxNumberBox"
+					editor-type="dxSelectBox"
+					:editor-options="supplierEditorOptions"
 				>
 					<dx-label text="Поставщик"></dx-label>
 				</dx-simple-item>
@@ -148,6 +149,7 @@ import {
 	DxRequiredRule,
 } from 'devextreme-vue/form';
 import type { DxButtonTypes } from 'devextreme-vue/button';
+import DataSource from 'devextreme/data/data_source';
 // import { Workbook } from 'exceljs';
 import csv from 'papaparse';
 
@@ -156,6 +158,11 @@ import { useBoolean } from '@/shared/lib/use/base/useBoolean';
 import { formatCurrency, formatInteger } from '@/shared/lib/utils/formatters';
 import { showError, showSuccess } from '@/shared/lib/utils/notifications';
 import { DataGrid } from '@/shared/ui';
+
+import {
+	getSuppliers,
+	type IListItem as ISupplierListItem,
+} from '@/entities/suppliers';
 
 import ProductPopupCard from './ProductPopupCard.vue';
 import { useModel } from '../model';
@@ -277,6 +284,20 @@ function onAddProduct(item: ICreateProductListItem) {
 }
 
 const dateEditorOptions = { type: 'datetime' };
+
+const suppliersDataSource = new DataSource<ISupplierListItem, 'supplier_id'>({
+	key: 'supplier_id',
+	load: async () => {
+		return await getSuppliers(0, 0);
+	},
+	paginate: false,
+});
+const supplierEditorOptions = {
+	dataSource: suppliersDataSource,
+	value: form.value.supplier_id,
+	displayExpr: 'name',
+	valueExpr: 'supplier_id',
+};
 
 const fileUploaderElement = ref<HTMLElement>();
 const importButtonOptions = {
