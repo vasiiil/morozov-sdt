@@ -60,13 +60,23 @@
 					<div class="products-data-grid">
 						<data-grid
 							:data-source="form.items"
-							grid-title="Товары"
+							:grid-title="`Товары (${form.items.length})`"
+							:pager-visible="false"
 							add-button-text="Добавить"
 							add-enabled
 							delete-enabled
 							ref="productsDataGrid"
 							@add-click="onAddProductClick"
 						>
+							<template #beforeAddButton>
+								<dx-data-grid-toolbar-item
+									location="after"
+									widget="dxButton"
+									:visible="!!fileUploaderElement"
+									:options="importButtonOptions"
+								>
+								</dx-data-grid-toolbar-item>
+							</template>
 							<dx-column
 								data-field="item_id"
 								data-type="string"
@@ -109,6 +119,16 @@
 				</dx-simple-item>
 			</dx-group-item>
 		</dx-form>
+		<dx-file-uploader
+			:accept="allowedFileMimes.join(',')"
+			:allowed-file-extensions="allowedFileExtensions"
+			:multiple="false"
+			:visible="false"
+			upload-mode="useButtons"
+			ref="dxFileUploader"
+			@initialized="onFileUploaderInitialized"
+			@value-changed="onFileUploaderValueChanged"
+		></dx-file-uploader>
 	</dx-popup>
 </template>
 
@@ -116,7 +136,14 @@
 import { nextTick, ref, useTemplateRef } from 'vue';
 import type { ComponentExposed } from 'vue-component-type-helpers';
 import { DxPopup, DxToolbarItem } from 'devextreme-vue/popup';
-import { DxColumn } from 'devextreme-vue/data-grid';
+import {
+	DxColumn,
+	DxItem as DxDataGridToolbarItem,
+} from 'devextreme-vue/data-grid';
+import {
+	DxFileUploader,
+	type DxFileUploaderTypes,
+} from 'devextreme-vue/file-uploader';
 import {
 	DxForm,
 	DxLabel,
@@ -125,17 +152,21 @@ import {
 	DxRequiredRule,
 } from 'devextreme-vue/form';
 import type { DxButtonTypes } from 'devextreme-vue/button';
+// import { Workbook } from 'exceljs';
+import csv from 'papaparse';
 
 import type { TPrimitiveRecord } from '@/shared/lib/types/object';
 import { useBoolean } from '@/shared/lib/use/base/useBoolean';
 import { formatCurrency, formatInteger } from '@/shared/lib/utils/formatters';
-import { showSuccess } from '@/shared/lib/utils/notifications';
+import { showError, showSuccess } from '@/shared/lib/utils/notifications';
 import { DataGrid } from '@/shared/ui';
 
 import ProductPopupCard from './ProductPopupCard.vue';
 import { useModel } from '../model';
+type TCSVRow = [string, string, string, string, string, string];
 import {
 	getDefaultForm,
+	getProductDefaultForm,
 	type ICreateItem,
 	type ICreateProductListItem,
 } from '../config';
@@ -253,6 +284,186 @@ function onAddProduct(item: ICreateProductListItem) {
 }
 
 const dateEditorOptions = { type: 'datetime' };
+
+const fileUploaderElement = ref<HTMLElement>();
+const importButtonOptions = {
+	icon: 'upload',
+	text: 'Импорт',
+	stylingMode: 'outlined',
+	onClick: () => {
+		const btn = fileUploaderElement.value?.querySelector<HTMLButtonElement>(
+			'.dx-fileuploader-button',
+		);
+		if (!btn) {
+			return;
+		}
+		btn.click();
+	},
+};
+function onFileUploaderInitialized(
+	event: DxFileUploaderTypes.InitializedEvent,
+) {
+	if (!event.element) {
+		return;
+	}
+	fileUploaderElement.value = event.element;
+}
+async function onFileUploaderValueChanged(
+	event: DxFileUploaderTypes.ValueChangedEvent,
+) {
+	if (!event.value) {
+		return;
+	}
+	const file = event.value[0];
+	const ext = file.name.split('.').pop();
+	if (ext === 'csv' || ext === 'txt') {
+		parseCsv(file);
+		return;
+	}
+
+	const buffer = await readFile(file);
+	if (!buffer) {
+		showError('Не удалось открыть файл');
+		return;
+	}
+}
+function readFile(file: File): Promise<string | ArrayBuffer | null> {
+	return new Promise((resolve) => {
+		const reader = new FileReader();
+		reader.readAsText(file);
+		reader.onload = () => {
+			resolve(reader.result);
+		};
+	});
+}
+async function parseCsv(file: File) {
+	csv.parse<TCSVRow>(file, {
+		complete: (results) => {
+			const products: ICreateProductListItem[] = [];
+			let rowIndex;
+			try {
+				for (rowIndex = 1; rowIndex < results.data.length; rowIndex++) {
+					const row = trimRow(results.data[rowIndex]);
+					if (row.every((item) => item === '')) {
+						continue;
+					}
+
+					const itemId = validateItemId(row[0]);
+					const name = validateName(row[1]);
+					const price = validatePrice(row[2]);
+					const quantity = validateQuantity(row[3]);
+					const marks = validateMarks(row[4]);
+					const vas = validateVas(row[5]);
+					const product = getProductDefaultForm();
+					product.item_id = itemId;
+					product.name = name;
+					product.price = price;
+					product.price_nds = price;
+					product.quantity = quantity;
+					product.sum = quantity * price;
+					product.sum_nds = quantity * price;
+					product.marks = marks;
+					product.vas = vas;
+
+					products.push(product);
+				}
+			} catch (error) {
+				showError(
+					`Ошибка в ${rowIndex} строке. ${typeof error === 'string' ? error : ''}`,
+				);
+				products.length = 0;
+			}
+
+			if (products.length > 0) {
+				for (const product of products) {
+					form.value.items.push(product);
+				}
+				reloadProducts();
+			}
+		},
+		error: () => {
+			showError('Не удалось открыть файл');
+		},
+	});
+	// const workbook = new Workbook();
+	// const sheet = await workbook.csv.read(buffer);
+	// sheet.eachRow(function (row, rowNumber) {
+	// 	console.log({rowNumber, row});
+	// });
+}
+function trimRow(row: TCSVRow): TCSVRow {
+	for (let i = 0; i < 6; i++) {
+		row[i] = row[i]?.trim() ?? '';
+	}
+	return row;
+}
+function validateOnEmpty(value: string, errorMessage: string): string {
+	if (value.length === 0) {
+		throw errorMessage;
+	}
+	return value;
+}
+function validateItemId(value: string): ICreateProductListItem['item_id'] {
+	value = validateOnEmpty(value, 'Не заполнен Артикул');
+	const pattern = /^[0-9a-zа-яА-ЯA-Z\.,\\\/\(\)\[\]\-=_\s]+$/;
+	if (!pattern.test(value)) {
+		throw 'Артикул содержит недопустимые символы';
+	}
+	return value;
+}
+function validateName(value: string): ICreateProductListItem['name'] {
+	value = validateOnEmpty(value, 'Не заполнено Наименование');
+	return value;
+}
+function validateQuantity(value: string): ICreateProductListItem['quantity'] {
+	value = validateOnEmpty(value, 'Не заполнено Количество');
+	value = value.replaceAll(' ', '');
+	const pattern = /^\d+$/;
+	if (!pattern.test(value)) {
+		throw 'Количество должно быть целым положительным числом';
+	}
+	return parseInt(value);
+}
+function validatePrice(value: string): ICreateProductListItem['price'] {
+	value = validateOnEmpty(value, 'Не заполнена Цена');
+	value = value.replaceAll(' ', '').replaceAll(',', '.');
+	const pattern = /^\d+(\.\d\d)?$/;
+	if (!pattern.test(value)) {
+		throw 'Цена должна быть положительным числом';
+	}
+	return parseFloat(value);
+}
+function validateMarks(value: string): ICreateProductListItem['marks'] {
+	if (value === '') {
+		return false;
+	}
+	if (value === '0') {
+		return false;
+	}
+	if (value === '1') {
+		return true;
+	}
+	throw 'Честный знак заполнен некорректно';
+}
+function validateVas(value: string): ICreateProductListItem['vas'] {
+	const pattern = /^(\d{2,3})?$/;
+	if (!pattern.test(value)) {
+		throw new Error('VAS код заполнен некорректно');
+	}
+	return value;
+}
+const allowedFileMimes = [
+	'text/csv',
+	'text/plain',
+	'application/vnd.ms-excel',
+	'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+	'application/vnd.openxmlformats-officedocument.spreadsheetml.template',
+	'application/vnd.ms-excel.sheet.macroEnabled.12',
+	'application/vnd.ms-excel.template.macroEnabled.12',
+	'application/vnd.ms-excel.addin.macroEnabled.12',
+	'application/vnd.ms-excel.sheet.binary.macroEnabled.12',
+];
+const allowedFileExtensions = ['.xlsx', '.csv', '.txt'];
 </script>
 
 <style lang="scss" scoped></style>
