@@ -161,9 +161,7 @@ const preparedTemplates =
 			: [templates];
 const elementAttr: DxDataGridTypes.Properties['elementAttr'] = {};
 if (maxHeight) {
-	elementAttr.style = {
-		maxHeight: getHTMLSize(maxHeight),
-	};
+	elementAttr.style = `max-height: ${getHTMLSize(maxHeight)};`;
 }
 
 function onEditorPrepared(event: DxDataGridTypes.EditorPreparedEvent) {
