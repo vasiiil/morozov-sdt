@@ -47,7 +47,7 @@ export const statuses = [
 	},
 	{
 		value: 123,
-		text: 'Приемка',
+		text: 'Приемка (размещение)',
 		type_id: 12,
 	},
 	{

@@ -3,8 +3,8 @@
 		ref="dxPopup"
 		title="Поставка"
 		:wrapper-attr="{ class: 'waybill-popup-card' }"
-		width="60vw"
-		:height="625"
+		width="80vw"
+		:height="700"
 		max-height="80vh"
 		@hidden="onHidden"
 		@showing="onShowing"
@@ -30,7 +30,7 @@
 		>
 			<dx-group-item
 				caption="Основная информация"
-				:col-count="2"
+				:col-count="3"
 			>
 				<dx-simple-item data-field="id">
 					<dx-label text="Номер накладной"></dx-label>
@@ -51,13 +51,13 @@
 				>
 					<dx-label text="Поставщик"></dx-label>
 				</dx-simple-item>
-				<dx-empty-item></dx-empty-item>
-				<dx-simple-item :col-span="2">
+				<dx-simple-item :col-span="3">
 					<div class="products-data-grid">
 						<data-grid
 							:data-source="form.items"
 							:grid-title="`Товары (${form.items.length})`"
 							:pager-visible="false"
+							:max-height="350"
 							add-button-text="Добавить"
 							add-enabled
 							delete-enabled
@@ -77,7 +77,7 @@
 								data-field="item_id"
 								data-type="string"
 								caption="Артикул"
-								:width="200"
+								:width="130"
 							></dx-column>
 							<dx-column
 								data-field="name"
@@ -105,6 +105,20 @@
 								caption="Сумма"
 								:format="formatCurrency"
 								:width="120"
+							></dx-column>
+							<dx-column
+								data-field="marks"
+								data-type="boolean"
+								caption="Маркировка"
+								alignment="right"
+								:show-editor-always="false"
+								:width="100"
+							></dx-column>
+							<dx-column
+								data-field="vas"
+								data-type="string"
+								caption="VAS"
+								:width="100"
 							></dx-column>
 						</data-grid>
 						<product-popup-card
@@ -145,12 +159,11 @@ import {
 	DxLabel,
 	DxSimpleItem,
 	DxGroupItem,
-	DxEmptyItem,
 	DxRequiredRule,
 } from 'devextreme-vue/form';
 import type { DxButtonTypes } from 'devextreme-vue/button';
 import DataSource from 'devextreme/data/data_source';
-// import { Workbook } from 'exceljs';
+import { Workbook } from 'exceljs';
 import csv from 'papaparse';
 
 import type { TPrimitiveRecord } from '@/shared/lib/types/object';
@@ -340,15 +353,65 @@ async function onFileUploaderValueChanged(
 		showError('Не удалось открыть файл');
 		return;
 	}
+
+	if (ext === 'xlsx' && buffer instanceof ArrayBuffer) {
+		parseExcel(buffer);
+		return;
+	}
 }
 function readFile(file: File): Promise<string | ArrayBuffer | null> {
 	return new Promise((resolve) => {
 		const reader = new FileReader();
-		reader.readAsText(file);
+		reader.readAsArrayBuffer(file);
 		reader.onload = () => {
 			resolve(reader.result);
 		};
 	});
+}
+async function parseExcel(buffer: ArrayBuffer) {
+	const excel = new Workbook();
+	const wb = await excel.xlsx.load(buffer);
+	const sheet = wb.getWorksheet(1);
+	if (!sheet) {
+		showError('Не удалось открыть файл');
+		return;
+	}
+	if (!sheet.lastRow) {
+		showError('Пустой файл');
+		return;
+	}
+
+	const products: ICreateProductListItem[] = [];
+	let rowIndex;
+	try {
+		for (rowIndex = 2; rowIndex <= sheet.lastRow.number; rowIndex++) {
+			const row = sheet.getRow(rowIndex).values;
+			if (!row || !Array.isArray(row) || row.length === 0) {
+				continue;
+			}
+
+			// first (0) element is empty
+			// 1-based indeces
+			row.shift();
+			const rowValues: TCSVRow = row.map((value) => `${value}`) as TCSVRow;
+			const product = validateRow(rowValues);
+			if (product) {
+				products.push(product);
+			}
+		}
+	} catch (error) {
+		showError(
+			`Ошибка в ${rowIndex} строке. ${typeof error === 'string' ? error : ''}`,
+		);
+		products.length = 0;
+	}
+
+	if (products.length > 0) {
+		for (const product of products) {
+			form.value.items.push(product);
+		}
+		reloadProducts();
+	}
 }
 async function parseCsv(file: File) {
 	csv.parse<TCSVRow>(file, {
@@ -357,29 +420,10 @@ async function parseCsv(file: File) {
 			let rowIndex;
 			try {
 				for (rowIndex = 1; rowIndex < results.data.length; rowIndex++) {
-					const row = trimRow(results.data[rowIndex]);
-					if (row.every((item) => item === '')) {
-						continue;
+					const product = validateRow(results.data[rowIndex]);
+					if (product) {
+						products.push(product);
 					}
-
-					const itemId = validateItemId(row[0]);
-					const name = validateName(row[1]);
-					const price = validatePrice(row[2]);
-					const quantity = validateQuantity(row[3]);
-					const marks = validateMarks(row[4]);
-					const vas = validateVas(row[5]);
-					const product = getProductDefaultForm();
-					product.item_id = itemId;
-					product.name = name;
-					product.price = price;
-					product.price_nds = price;
-					product.quantity = quantity;
-					product.sum = quantity * price;
-					product.sum_nds = quantity * price;
-					product.marks = marks;
-					product.vas = vas;
-
-					products.push(product);
 				}
 			} catch (error) {
 				showError(
@@ -399,11 +443,30 @@ async function parseCsv(file: File) {
 			showError('Не удалось открыть файл');
 		},
 	});
-	// const workbook = new Workbook();
-	// const sheet = await workbook.csv.read(buffer);
-	// sheet.eachRow(function (row, rowNumber) {
-	// 	console.log({rowNumber, row});
-	// });
+}
+function validateRow(row: TCSVRow): ICreateProductListItem | null {
+	row = trimRow(row);
+	if (row.every((item) => item === '')) {
+		return null;
+	}
+	const itemId = validateItemId(row[0]);
+	const name = validateName(row[1]);
+	const price = validatePrice(row[2]);
+	const quantity = validateQuantity(row[3]);
+	const marks = validateMarks(row[4]);
+	const vas = validateVas(row[5]);
+	const product = getProductDefaultForm();
+	product.item_id = itemId;
+	product.name = name;
+	product.price = price;
+	product.price_nds = price;
+	product.quantity = quantity;
+	product.sum = quantity * price;
+	product.sum_nds = quantity * price;
+	product.marks = marks;
+	product.vas = vas;
+
+	return product;
 }
 function trimRow(row: TCSVRow): TCSVRow {
 	for (let i = 0; i < 6; i++) {
